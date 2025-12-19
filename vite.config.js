@@ -18,12 +18,12 @@ export default defineConfig({
         display: "standalone",
         icons: [
           {
-            src: "assets/icon.png", // Vite PWA handles asset pathing
+            src: "icon.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "assets/icon.png",
+            src: "icon.png",
             sizes: "512x512",
             type: "image/png",
           },
