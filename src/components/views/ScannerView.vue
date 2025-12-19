@@ -256,8 +256,8 @@ const t = computed(
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
-    <!-- Scanner Container -->
+  <div class="h-full flex flex-col gap-4">
+    <!-- Scanner Container - needs height for camera -->
     <div v-if="!scanResult" class="flex-1 flex flex-col min-h-0">
       <!-- Camera View -->
       <div
@@ -388,10 +388,7 @@ const t = computed(
     </div>
 
     <!-- Result View -->
-    <div
-      v-else
-      class="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar min-h-0"
-    >
+    <div v-else class="flex flex-col gap-4">
       <div
         :class="[
           'rounded-2xl p-4 shadow-sm border flex items-center justify-between flex-shrink-0',

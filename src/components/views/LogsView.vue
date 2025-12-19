@@ -95,10 +95,7 @@ const getTypeColor = (type) => {
 
 <template>
   <div
-    :class="[
-      'h-full flex flex-col gap-4',
-      animationsEnabled ? 'animate-fade-in' : '',
-    ]"
+    :class="['flex flex-col gap-4', animationsEnabled ? 'animate-fade-in' : '']"
   >
     <!-- Confirm Modal -->
     <ConfirmModal
@@ -124,7 +121,7 @@ const getTypeColor = (type) => {
     <div
       v-if="selectedLog"
       :class="[
-        'flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar',
+        'flex flex-col gap-4',
         animationsEnabled ? 'animate-slide-up' : '',
       ]"
     >
@@ -197,7 +194,7 @@ const getTypeColor = (type) => {
     </div>
 
     <!-- List View -->
-    <template v-else>
+    <div v-else class="flex flex-col gap-4">
       <!-- Header -->
       <div
         :class="[
@@ -300,10 +297,7 @@ const getTypeColor = (type) => {
       </div>
 
       <!-- History List -->
-      <div
-        v-if="activeTab === 'history'"
-        class="flex-1 overflow-y-auto custom-scrollbar space-y-2"
-      >
+      <div v-if="activeTab === 'history'" class="space-y-2">
         <div
           v-if="logs.length === 0"
           class="flex flex-col items-center justify-center h-full text-center py-12"
@@ -410,10 +404,7 @@ const getTypeColor = (type) => {
       </div>
 
       <!-- Cases List -->
-      <div
-        v-if="activeTab === 'cases'"
-        class="flex-1 overflow-y-auto custom-scrollbar space-y-2"
-      >
+      <div v-if="activeTab === 'cases'" class="space-y-2">
         <div
           v-if="caseItems.length === 0"
           class="flex flex-col items-center justify-center h-full text-center py-12"
@@ -502,6 +493,6 @@ const getTypeColor = (type) => {
           </p>
         </button>
       </div>
-    </template>
+    </div>
   </div>
 </template>
