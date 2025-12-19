@@ -10,6 +10,10 @@ import {
 } from "../../utils/forensics.js";
 import { checkUrlWithVT } from "../../utils/network.js";
 import { parseQRProtocol } from "../../utils/protocols.js";
+import {
+  resultPanelStrings,
+  typeExplanations,
+} from "../../i18n/resultPanel.js";
 
 // Sub-components
 import ResultSummary from "../result/ResultSummary.vue";
@@ -26,74 +30,9 @@ const isDark = computed(() => store.config.darkMode);
 const lang = computed(() => store.config.language);
 
 // Translations for user-friendly display
-const strings = {
-  en: {
-    summary: "Summary",
-    details: "Details",
-    virusTotal: "VirusTotal",
-    raw: "Raw Data",
-    detected: "Detected",
-    whatIsThis: "What does this mean?",
-    copy: "Copy",
-    scanUrl: "Scan URL",
-    riskFactors: "Risk Factors",
-    noThreats: "No obvious threats detected",
-    safeExplain: "This content appears safe to use.",
-    suspiciousExplain:
-      "Some patterns detected that may indicate risk. Use caution.",
-    dangerExplain:
-      "This content contains known malicious patterns. Do not open!",
-    safe: "Safe",
-    suspicious: "Suspicious",
-    highRisk: "High Risk",
-    entropy: "Entropy",
-    size: "Size",
-    bytes: "bytes",
-    hexDump: "Hex Dump",
-    parsedData: "Parsed Data",
-    scanning: "Scanning with VirusTotal...",
-    startScan: "Start Deep Scan",
-    malicious: "Malicious",
-    harmless: "Harmless",
-    malicious: "Malicious",
-    harmless: "Harmless",
-    addToCase: "Add to Case",
-    added: "Added to Case!",
-  },
-  id: {
-    summary: "Ringkasan",
-    details: "Detail",
-    virusTotal: "VirusTotal",
-    raw: "Data Mentah",
-    detected: "Terdeteksi",
-    whatIsThis: "Apa artinya ini?",
-    copy: "Salin",
-    scanUrl: "Scan URL",
-    riskFactors: "Faktor Risiko",
-    noThreats: "Tidak ada ancaman yang terdeteksi",
-    safeExplain: "Konten ini tampak aman untuk digunakan.",
-    suspiciousExplain:
-      "Beberapa pola terdeteksi yang mungkin mengindikasikan risiko. Berhati-hatilah.",
-    dangerExplain: "Konten ini mengandung pola berbahaya. Jangan dibuka!",
-    safe: "Aman",
-    suspicious: "Mencurigakan",
-    highRisk: "Risiko Tinggi",
-    entropy: "Entropi",
-    size: "Ukuran",
-    bytes: "byte",
-    hexDump: "Hex Dump",
-    parsedData: "Data Terurai",
-    scanning: "Memindai dengan VirusTotal...",
-    startScan: "Mulai Pemindaian",
-    malicious: "Berbahaya",
-    harmless: "Tidak Berbahaya",
-    malicious: "Berbahaya",
-    harmless: "Tidak Berbahaya",
-    addToCase: "Simpan ke Kasus",
-    added: "Disimpan!",
-  },
-};
-const t = computed(() => strings[lang.value] || strings.en);
+const t = computed(
+  () => resultPanelStrings[lang.value] || resultPanelStrings.en
+);
 
 const activeTab = ref("summary");
 const analysis = ref(null);
@@ -133,35 +72,7 @@ const handleAddToCase = async () => {
   }, 2000);
 };
 
-// Type explanations for non-tech users
-const typeExplanations = {
-  en: {
-    QRIS: "This is a QRIS payment code used in Indonesia. It contains merchant and payment information.",
-    URL: "This is a web link. It will open a website if you click it.",
-    WIFI: "This contains WiFi credentials. Your device can connect to this network automatically.",
-    VCARD:
-      "This is a contact card. It contains name, phone, and other contact details.",
-    GEO: "This is a geographic location. It can open in your maps app.",
-    SMS: "This will compose a text message to a phone number.",
-    TEL: "This will dial a phone number.",
-    EMAIL: "This will compose an email message.",
-    CALENDAR: "This is a calendar event that can be added to your calendar.",
-    TEXT: "This is plain text content.",
-  },
-  id: {
-    QRIS: "Ini adalah kode pembayaran QRIS. Berisi informasi merchant dan pembayaran.",
-    URL: "Ini adalah tautan web. Akan membuka website jika diklik.",
-    WIFI: "Ini berisi kredensial WiFi. Perangkat dapat terhubung otomatis.",
-    VCARD:
-      "Ini adalah kartu kontak. Berisi nama, telepon, dan detail kontak lainnya.",
-    GEO: "Ini adalah lokasi geografis. Dapat dibuka di aplikasi peta.",
-    SMS: "Ini akan membuat pesan SMS ke nomor telepon.",
-    TEL: "Ini akan menelepon nomor tertentu.",
-    EMAIL: "Ini akan membuat email.",
-    CALENDAR: "Ini adalah acara kalender yang dapat ditambahkan.",
-    TEXT: "Ini adalah teks biasa.",
-  },
-};
+// Type explanations imported from i18n/resultPanel.js
 
 const analyzeData = () => {
   const raw = props.data;
@@ -327,7 +238,7 @@ const copyToClipboard = () => {
             "
           ></i>
           <span class="text-[10px] font-bold mt-1">{{
-            isAdded ? "Saved" : isDuplicate ? "Exists" : "Save"
+            isAdded ? t.saved : isDuplicate ? t.exists : t.save
           }}</span>
         </button>
       </div>

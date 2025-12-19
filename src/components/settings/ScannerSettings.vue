@@ -61,7 +61,9 @@ const updateConfig = (key, value) => {
     >
       <div class="px-5 pb-5 space-y-5">
         <!-- Auto-scan -->
-        <div class="flex items-center justify-between min-h-[52px]">
+        <div
+          class="flex items-center justify-between min-h-[52px] flex-wrap gap-2"
+        >
           <div class="flex items-center gap-3">
             <div
               class="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -103,7 +105,9 @@ const updateConfig = (key, value) => {
         </div>
 
         <!-- Haptic -->
-        <div class="flex items-center justify-between min-h-[52px]">
+        <div
+          class="flex items-center justify-between min-h-[52px] flex-wrap gap-2"
+        >
           <div class="flex items-center gap-3">
             <div
               class="w-11 h-11 rounded-xl flex items-center justify-center"

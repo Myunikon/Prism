@@ -247,6 +247,28 @@ const downloadBarcode = async (format) => {
   }
 };
 
+// Localizations
+const strings = {
+  en: {
+    generatorTitle: "Barcode Generator",
+    generatorDesc: "Create standard 1D barcodes",
+    format: "Format",
+    height: "Height",
+    showText: "Show Text",
+    example: "Example",
+  },
+  id: {
+    generatorTitle: "Pembuat Barcode",
+    generatorDesc: "Buat barcode 1D standar",
+    format: "Format",
+    height: "Tinggi",
+    showText: "Tampilkan Teks",
+    example: "Contoh",
+  },
+};
+
+const t = computed(() => strings[store.config.language] || strings.en);
+
 defineExpose({ setPayload });
 </script>
 
@@ -272,13 +294,13 @@ defineExpose({ setPayload });
               class="font-bold text-sm"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
-              Barcode Generator
+              {{ t.generatorTitle }}
             </h3>
             <p
               class="text-xs"
               :class="isDark ? 'text-gray-500' : 'text-gray-400'"
             >
-              Create standard 1D barcodes
+              {{ t.generatorDesc }}
             </p>
           </div>
         </div>
@@ -289,7 +311,7 @@ defineExpose({ setPayload });
             class="text-xs font-semibold mb-2"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            Format
+            {{ t.format }}
           </p>
           <div class="flex flex-wrap gap-1.5">
             <button
@@ -317,7 +339,7 @@ defineExpose({ setPayload });
               class="text-xs font-semibold mb-2"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
-              Height ({{ barcodeHeight }})
+              {{ t.height }} ({{ barcodeHeight }})
             </p>
             <input
               type="range"
@@ -332,7 +354,7 @@ defineExpose({ setPayload });
               class="text-xs font-semibold"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
-              Show Text
+              {{ t.showText }}
             </p>
             <div
               @click="barcodeShowText = !barcodeShowText"
@@ -370,7 +392,7 @@ defineExpose({ setPayload });
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
             ]"
           >
-            Example
+            {{ t.example }}
           </button>
         </div>
 

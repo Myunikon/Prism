@@ -9,9 +9,11 @@ import { extractExif } from "../../utils/exif.js";
 import { extractImageMeta } from "../../utils/imageMeta.js";
 import { Html5Qrcode } from "html5-qrcode";
 import ExifDataPanel from "../analyze/ExifDataPanel.vue";
+import AnalyzeUpload from "../analyze/AnalyzeUpload.vue";
 import Tesseract from "tesseract.js";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { analyzeStrings } from "../../i18n/analyze.js";
 
 const isDark = computed(() => store.config.darkMode);
 const animationsEnabled = computed(() => store.config.animations !== false);
@@ -202,7 +204,7 @@ const runOCR = async () => {
       ocrText.value += "\n\n(Low confidence result - try a cleared image)";
     }
   } catch (e) {
-    ocrText.value = "OCR Failed: " + e.message;
+    ocrText.value = t.value.ocrFailed + e.message;
     console.error(e);
   } finally {
     isOcrLoading.value = false;
@@ -228,6 +230,38 @@ const initMap = () => {
   }
 };
 
+// Watch for passed image from Scanner
+watch(
+  () => store.previewImage,
+  async (newVal) => {
+    if (newVal && !fileData.value) {
+      // Convert base64 to File object
+      const res = await fetch(newVal);
+      const blob = await res.blob();
+      const file = new File([blob], "captured_scan.png", { type: "image/png" });
+      store.setPreviewImage(null); // Clear it
+      await processFile(file);
+    }
+  },
+  { immediate: true }
+);
+
+// Watch for passed image from Scanner
+watch(
+  () => store.previewImage,
+  async (newVal) => {
+    if (newVal && !fileData.value) {
+      // Convert base64 to File object
+      const res = await fetch(newVal);
+      const blob = await res.blob();
+      const file = new File([blob], "captured_scan.png", { type: "image/png" });
+      store.setPreviewImage(null); // Clear it
+      await processFile(file);
+    }
+  },
+  { immediate: true }
+);
+
 // Watch for exif data to init map
 watch(exifData, async (newVal) => {
   if (newVal && newVal.gps) {
@@ -235,6 +269,10 @@ watch(exifData, async (newVal) => {
     initMap();
   }
 });
+
+const t = computed(
+  () => analyzeStrings[store.config.language] || analyzeStrings.en
+);
 </script>
 
 <template>
@@ -248,67 +286,15 @@ watch(exifData, async (newVal) => {
     <div id="reader-hidden" class="absolute top-[-9999px] left-[-9999px]"></div>
 
     <!-- Upload State -->
-    <div
+    <AnalyzeUpload
       v-if="!fileData"
-      @dragover.prevent="isDragging = true"
-      @dragleave.prevent="isDragging = false"
-      @drop.prevent="onDrop"
-      :class="[
-        'flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-2xl transition-all cursor-pointer min-h-[60vh] md:min-h-0',
-        isDragging
-          ? 'border-purple-500 bg-purple-50/50'
-          : isDark
-          ? 'border-gray-600 bg-gray-800/50 hover:border-purple-500 hover:bg-purple-900/20'
-          : 'border-gray-300 bg-white/80 backdrop-blur hover:border-purple-400 hover:bg-purple-50/30',
-      ]"
-    >
-      <div class="text-center p-8">
-        <div
-          class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-xl"
-        >
-          <i class="fa-solid fa-cloud-arrow-up text-3xl text-white"></i>
-        </div>
-        <h3
-          class="text-xl font-bold mb-2"
-          :class="isDark ? 'text-white' : 'text-gray-800'"
-        >
-          Drop file to analyze
-        </h3>
-        <p
-          class="text-sm mb-6"
-          :class="isDark ? 'text-gray-400' : 'text-gray-500'"
-        >
-          Supports images, QR codes, and text files
-        </p>
-        <label
-          class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all cursor-pointer"
-        >
-          <i class="fa-solid fa-folder-open"></i>
-          Browse Files
-          <input
-            type="file"
-            class="hidden"
-            @change="onFileSelect"
-            accept="image/*,.txt,.json,.xml"
-          />
-        </label>
-        <div
-          class="mt-6 flex items-center justify-center gap-4 text-xs"
-          :class="isDark ? 'text-gray-500' : 'text-gray-400'"
-        >
-          <span
-            ><i class="fa-solid fa-image mr-1 text-purple-500"></i>Images</span
-          >
-          <span
-            ><i class="fa-solid fa-qrcode mr-1 text-blue-500"></i>QR Codes</span
-          >
-          <span
-            ><i class="fa-solid fa-file-code mr-1 text-green-500"></i
-            >JSON/XML</span
-          >
-        </div>
-      </div>
-    </div>
+      :is-dragging="isDragging"
+      :is-dark="isDark"
+      :t="t"
+      @update:is-dragging="isDragging = $event"
+      @drop="onDrop"
+      @file-select="onFileSelect"
+    />
 
     <!-- Analysis State -->
     <div v-else class="space-y-4">
@@ -371,7 +357,7 @@ watch(exifData, async (newVal) => {
           :class="isDark ? 'text-white' : 'text-gray-800'"
         >
           <i class="fa-solid fa-microscope text-purple-500"></i>
-          Image Forensics
+          {{ t.imageForensics }}
         </h3>
 
         <!-- Image Preview and ELA -->
@@ -381,7 +367,7 @@ watch(exifData, async (newVal) => {
               class="text-xs font-medium mb-2"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
-              Original
+              {{ t.original }}
             </p>
             <img
               :src="previewUrl"
@@ -395,7 +381,7 @@ watch(exifData, async (newVal) => {
           </div>
           <div>
             <p class="text-xs font-medium mb-2 text-purple-500">
-              Error Level Analysis
+              {{ t.ela }}
             </p>
             <img
               v-if="elaUrl"
@@ -413,7 +399,7 @@ watch(exifData, async (newVal) => {
               ]"
             >
               <i class="fa-solid fa-spinner animate-spin mr-2"></i>
-              Processing...
+              {{ t.processing }}
             </div>
           </div>
         </div>
@@ -424,7 +410,7 @@ watch(exifData, async (newVal) => {
             @click="runLSB"
             class="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all"
           >
-            <i class="fa-solid fa-layer-group mr-2"></i>Stego LSB Check
+            <i class="fa-solid fa-layer-group mr-2"></i>{{ t.stegoCheck }}
           </button>
           <button
             @click="runOCR"
@@ -435,7 +421,7 @@ watch(exifData, async (newVal) => {
               class="fa-solid"
               :class="isOcrLoading ? 'fa-spinner animate-spin' : 'fa-font'"
             ></i>
-            Extract Text (OCR)
+            {{ t.extractText }}
           </button>
         </div>
 
@@ -446,7 +432,7 @@ watch(exifData, async (newVal) => {
         >
           <div v-if="lsbUrl">
             <p class="text-xs font-bold mb-2 text-indigo-400">
-              LSB Noise Plane
+              {{ t.lsbNoise }}
             </p>
             <img
               :src="lsbUrl"
@@ -455,7 +441,7 @@ watch(exifData, async (newVal) => {
           </div>
           <div v-if="ocrText" class="relative">
             <p class="text-xs font-bold mb-2 text-emerald-400">
-              Extracted Text
+              {{ t.extractedText }}
             </p>
             <textarea
               readonly
@@ -474,7 +460,7 @@ watch(exifData, async (newVal) => {
         <!-- GPS Map -->
         <div v-if="exifData?.gps" class="mb-4">
           <p class="text-xs font-bold mb-2 text-orange-400">
-            <i class="fa-solid fa-map-location-dot mr-2"></i>GPS Location
+            <i class="fa-solid fa-map-location-dot mr-2"></i>{{ t.gpsLocation }}
           </p>
           <div
             ref="mapContainer"
@@ -495,7 +481,7 @@ watch(exifData, async (newVal) => {
             class="text-xs font-bold uppercase tracking-wide mb-3 flex items-center gap-2"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            <i class="fa-solid fa-image text-blue-500"></i>Image Info
+            <i class="fa-solid fa-image text-blue-500"></i>{{ t.imageInfo }}
           </h4>
           <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
             <div
@@ -508,7 +494,7 @@ watch(exifData, async (newVal) => {
                 class="text-[10px] font-medium uppercase"
                 :class="isDark ? 'text-gray-500' : 'text-gray-400'"
               >
-                Size
+                {{ t.size }}
               </p>
               <p
                 class="text-xs font-bold"
@@ -527,7 +513,7 @@ watch(exifData, async (newVal) => {
                 class="text-[10px] font-medium uppercase"
                 :class="isDark ? 'text-gray-500' : 'text-gray-400'"
               >
-                MP
+                {{ t.mp }}
               </p>
               <p
                 class="text-xs font-bold"
@@ -546,7 +532,7 @@ watch(exifData, async (newVal) => {
                 class="text-[10px] font-medium uppercase"
                 :class="isDark ? 'text-gray-500' : 'text-gray-400'"
               >
-                Ratio
+                {{ t.ratio }}
               </p>
               <p
                 class="text-xs font-bold"
@@ -565,7 +551,7 @@ watch(exifData, async (newVal) => {
                 class="text-[10px] font-medium uppercase"
                 :class="isDark ? 'text-gray-500' : 'text-gray-400'"
               >
-                Orient
+                {{ t.orient }}
               </p>
               <p
                 class="text-xs font-bold"
@@ -584,7 +570,7 @@ watch(exifData, async (newVal) => {
                 class="text-[10px] font-medium uppercase"
                 :class="isDark ? 'text-gray-500' : 'text-gray-400'"
               >
-                Format
+                {{ t.format }}
               </p>
               <p
                 class="text-xs font-bold"
@@ -603,7 +589,7 @@ watch(exifData, async (newVal) => {
                 class="text-[10px] font-medium uppercase"
                 :class="isDark ? 'text-gray-500' : 'text-gray-400'"
               >
-                File
+                {{ t.file }}
               </p>
               <p
                 class="text-xs font-bold"
@@ -616,7 +602,7 @@ watch(exifData, async (newVal) => {
         </div>
 
         <!-- EXIF Data (if available) -->
-        <ExifDataPanel :exifData="exifData" :isDark="isDark" />
+        <ExifDataPanel :exifData="exifData" :isDark="isDark" :t="t" />
 
         <!-- Hash -->
         <div
@@ -631,13 +617,13 @@ watch(exifData, async (newVal) => {
             class="text-xs font-medium mb-1 flex items-center gap-1"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            <i class="fa-solid fa-fingerprint text-cyan-500"></i>SHA-256 Hash
+            <i class="fa-solid fa-fingerprint text-cyan-500"></i>{{ t.shaHash }}
           </p>
           <p
             class="text-xs font-mono break-all select-all"
             :class="isDark ? 'text-gray-300' : 'text-gray-700'"
           >
-            {{ fileHash || "Calculating..." }}
+            {{ fileHash || t.calculating }}
           </p>
         </div>
 
@@ -675,8 +661,8 @@ watch(exifData, async (newVal) => {
             >
               {{
                 fileData && fileData !== "FORENSIC_ONLY"
-                  ? "QR/Barcode Detected"
-                  : "No QR/Barcode Found"
+                  ? t.qrDetected
+                  : t.noQrFound
               }}
             </p>
             <p
@@ -685,8 +671,8 @@ watch(exifData, async (newVal) => {
             >
               {{
                 fileData && fileData !== "FORENSIC_ONLY"
-                  ? "Decoded content available below"
-                  : "Only image analysis performed"
+                  ? t.decodedAvailable
+                  : t.onlyImageAnalysis
               }}
             </p>
           </div>

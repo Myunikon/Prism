@@ -71,7 +71,9 @@ const fontSizes = computed(() => [
     >
       <div class="px-5 pb-5 space-y-5">
         <!-- Dark Mode -->
-        <div class="flex items-center justify-between min-h-[52px]">
+        <div
+          class="flex items-center justify-between min-h-[52px] flex-wrap gap-2"
+        >
           <div class="flex items-center gap-3">
             <div
               class="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -117,7 +119,9 @@ const fontSizes = computed(() => [
         </div>
 
         <!-- Language -->
-        <div class="flex items-center justify-between min-h-[52px]">
+        <div
+          class="flex items-center justify-between min-h-[52px] flex-wrap gap-2"
+        >
           <div class="flex items-center gap-3">
             <div
               class="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -148,7 +152,9 @@ const fontSizes = computed(() => [
         </div>
 
         <!-- Font Size -->
-        <div class="flex items-center justify-between min-h-[52px]">
+        <div
+          class="flex items-center justify-between min-h-[52px] flex-wrap gap-2"
+        >
           <div class="flex items-center gap-3">
             <div
               class="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -187,7 +193,9 @@ const fontSizes = computed(() => [
         </div>
 
         <!-- Animations -->
-        <div class="flex items-center justify-between min-h-[52px]">
+        <div
+          class="flex items-center justify-between min-h-[52px] flex-wrap gap-2"
+        >
           <div class="flex items-center gap-3">
             <div
               class="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -216,18 +224,25 @@ const fontSizes = computed(() => [
             </div>
           </div>
           <button
-            @click="updateConfig('animations', !store.config.animations)"
+            @click="
+              updateConfig(
+                'animations',
+                store.config.animations === true ? false : true
+              )
+            "
             :class="[
               'relative w-14 h-8 rounded-full cursor-pointer',
               animationsEnabled ? 'transition-colors duration-300' : '',
-              store.config.animations ? 'bg-pink-500' : 'bg-gray-300',
+              store.config.animations === true ? 'bg-pink-500' : 'bg-gray-300',
             ]"
           >
             <div
               :class="[
                 'absolute top-1 w-6 h-6 bg-white rounded-full shadow-md',
                 animationsEnabled ? 'transition-transform duration-300' : '',
-                store.config.animations ? 'translate-x-7' : 'translate-x-1',
+                store.config.animations === true
+                  ? 'translate-x-7'
+                  : 'translate-x-1',
               ]"
             ></div>
           </button>

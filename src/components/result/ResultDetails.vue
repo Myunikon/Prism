@@ -21,7 +21,7 @@ defineProps({
             class="text-xs font-medium mb-1"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            Claimed CRC
+            {{ t.claimedCRC }}
           </p>
           <p
             class="text-lg font-mono font-bold"
@@ -46,7 +46,7 @@ defineProps({
             class="text-xs font-medium mb-1"
             :class="analysis.qris.isValid ? 'text-green-600' : 'text-red-600'"
           >
-            Calculated CRC
+            {{ t.calculatedCRC }}
           </p>
           <p
             :class="[
@@ -151,7 +151,7 @@ defineProps({
             class="text-sm font-bold"
             :class="isDark ? 'text-white' : 'text-gray-800'"
           >
-            {{ analysis.protocol.type }} QR Code
+            {{ analysis.protocol.type }} {{ t.qrCode }}
           </h3>
           <p
             class="text-xs"
@@ -212,7 +212,7 @@ defineProps({
       :class="isDark ? 'text-gray-500' : 'text-gray-400'"
     >
       <i class="fa-solid fa-info-circle text-3xl mb-2"></i>
-      <p class="text-sm">No structured data for this type</p>
+      <p class="text-sm">{{ t.noStructuredData }}</p>
     </div>
 
     <!-- Stats -->

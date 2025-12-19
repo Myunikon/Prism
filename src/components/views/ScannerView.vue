@@ -3,9 +3,10 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { Html5Qrcode } from "html5-qrcode";
 import { store } from "../../store/state.js";
 import ResultPanel from "../common/ResultPanel.vue";
+import { scannerStrings } from "../../i18n/scanner.js";
 
 const isDark = computed(() => store.config.darkMode);
-const animationsEnabled = computed(() => store.config.animations !== false); // Added missing prop
+const animationsEnabled = computed(() => store.config.animations !== false);
 const isScanning = ref(false);
 const scanResult = ref(null);
 const errorMsg = ref(null);
@@ -39,7 +40,7 @@ const startScanner = async () => {
 
   const readerElement = document.getElementById("reader");
   if (!readerElement) {
-    errorMsg.value = "Scanner container not found";
+    errorMsg.value = "scannerError";
     return;
   }
 
@@ -87,7 +88,7 @@ const startScanner = async () => {
     // Handle AbortError specifically (harmless interruption)
     if (err.name === "AbortError") return;
 
-    errorMsg.value = "Unable to access camera. Please check permissions.";
+    errorMsg.value = "cameraError";
     console.error(err);
   }
 };
@@ -112,12 +113,23 @@ const stopScanner = async () => {
     }
 
     if (state === 2 || state === 3) {
-      await html5QrcodeScanner.stop();
+      try {
+        await html5QrcodeScanner.stop();
+      } catch (err) {
+        // Ignore "removeChild" error as it occurs if DOM is already removed by Vue
+        if (!err.message?.includes("removeChild")) {
+          console.warn("Scanner stop warning:", err);
+        }
+      }
     }
 
-    // Only clear if element still exists to avoid removeChild errors
+    // Only clear if element still exists
     if (document.getElementById("reader")) {
-      await html5QrcodeScanner.clear();
+      try {
+        await html5QrcodeScanner.clear();
+      } catch (err) {
+        // Ignore clear errors
+      }
     }
   } catch (err) {
     console.warn("Scanner cleanup high-level error:", err);
@@ -145,21 +157,47 @@ const setCamera = async (event) => {
   if (store.currentTab === "cam") startScanner();
 };
 
-const onScanSuccess = (decodedText, decodedResult) => {
+const captureFrame = () => {
+  const video = document.querySelector("#reader video");
+  if (!video) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/png");
+};
+
+const capturedImage = ref(null);
+
+const onScanSuccess = async (decodedText, decodedResult) => {
   if (store.config.vibration && navigator.vibrate) {
     navigator.vibrate(100);
   }
 
+  // Capture the frame immediately
+  capturedImage.value = captureFrame();
+
+  // Stop scanner BEFORE updating state that removes the DOM element to prevent cleanup errors
+  await stopScanner();
+
   scanResult.value = decodedText;
   store.addHistory("SCAN", decodedText);
   store.setScanResult(decodedText, decodedResult);
-  stopScanner();
+};
+
+const goToAnalyze = () => {
+  if (capturedImage.value) {
+    store.setPreviewImage(capturedImage.value);
+    store.currentTab = "analyze";
+  }
 };
 
 const onScanFailure = (error) => {};
 
 const resetScan = () => {
   scanResult.value = null;
+  capturedImage.value = null;
   startScanner();
 };
 
@@ -188,15 +226,31 @@ const handleVisibilityChange = () => {
 onMounted(() => {
   loadCameras();
   document.addEventListener("visibilitychange", handleVisibilityChange);
-  if (store.currentTab === "cam") {
+
+  // Only start if store state is fully restored
+  if (store.isLoaded && store.currentTab === "cam") {
     startScanner();
   }
 });
+
+// Wait for store to load before starting scanner (prevents flash on wrong tab)
+watch(
+  () => store.isLoaded,
+  (loaded) => {
+    if (loaded && store.currentTab === "cam") {
+      startScanner();
+    }
+  }
+);
 
 onUnmounted(() => {
   document.removeEventListener("visibilitychange", handleVisibilityChange);
   stopScanner();
 });
+
+const t = computed(
+  () => scannerStrings[store.config.language] || scannerStrings.en
+);
 </script>
 
 <template>
@@ -232,10 +286,7 @@ onUnmounted(() => {
             ></div>
 
             <!-- Scan Line Animation -->
-            <div
-              v-if="animationsEnabled"
-              class="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan-line"
-            ></div>
+            <div v-if="animationsEnabled" class="scan-line-animation"></div>
           </div>
         </div>
 
@@ -251,7 +302,7 @@ onUnmounted(() => {
               @change="setCamera"
               class="appearance-none w-full h-11 pl-4 pr-10 bg-black/50 backdrop-blur rounded-full text-white text-xs font-medium focus:outline-none cursor-pointer border border-white/20 truncate"
             >
-              <option :value="null">Default Camera</option>
+              <option :value="null">{{ t.defaultCamera }}</option>
               <option v-for="cam in cameras" :key="cam.id" :value="cam.id">
                 {{ cam.label || `Camera ${cam.id.substr(0, 5)}` }}
               </option>
@@ -269,7 +320,7 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- Camera Mode Indicator - Moved to Bottom Left -->
+        <!-- Camera Mode Indicator -->
         <div
           v-if="isScanning && !errorMsg"
           class="absolute bottom-4 left-4 px-3 py-1.5 bg-black/50 backdrop-blur rounded-full z-10"
@@ -281,7 +332,7 @@ onUnmounted(() => {
                 facingMode === 'environment' ? 'fa-mobile-screen' : 'fa-user',
               ]"
             ></i>
-            {{ facingMode === "environment" ? "Back" : "Front" }}
+            {{ facingMode === "environment" ? t.back : t.front }}
           </span>
         </div>
 
@@ -300,24 +351,24 @@ onUnmounted(() => {
             class="font-semibold mb-4"
             :class="isDark ? 'text-white' : 'text-gray-800'"
           >
-            {{ errorMsg }}
+            {{ t[errorMsg] || errorMsg }}
           </p>
           <button
             @click="startScanner"
             class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer"
           >
-            <i class="fa-solid fa-rotate-right mr-2"></i>Try Again
+            <i class="fa-solid fa-rotate-right mr-2"></i>{{ t.tryAgain }}
           </button>
         </div>
 
         <!-- Scanning Indicator -->
         <div
           v-if="isScanning && !errorMsg"
-          class="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 backdrop-blur-lg rounded-full z-10"
+          class="absolute bottom-16 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/60 backdrop-blur-lg rounded-full z-10"
         >
           <div class="flex items-center gap-2 text-sm font-medium text-white">
             <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span>Scanning...</span>
+            <span>{{ t.scanning }}</span>
           </div>
         </div>
       </div>
@@ -329,7 +380,7 @@ onUnmounted(() => {
           :class="isDark ? 'text-gray-400' : 'text-gray-600'"
         >
           <i class="fa-solid fa-qrcode mr-2 text-purple-500"></i>
-          Point your camera at a QR code or barcode
+          {{ t.instruction }}
         </p>
       </div>
     </div>
@@ -337,11 +388,11 @@ onUnmounted(() => {
     <!-- Result View -->
     <div
       v-else
-      class="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar"
+      class="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar min-h-0"
     >
       <div
         :class="[
-          'rounded-2xl p-4 shadow-sm border flex items-center justify-between',
+          'rounded-2xl p-4 shadow-sm border flex items-center justify-between flex-shrink-0',
           isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200',
         ]"
       >
@@ -356,22 +407,33 @@ onUnmounted(() => {
               class="text-base font-bold"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
-              Scan Complete
+              {{ t.scanComplete }}
             </h2>
             <p
               class="text-xs"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
-              Analysis ready
+              {{ t.analysisReady }}
             </p>
           </div>
         </div>
-        <button
-          @click="resetScan"
-          class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer"
-        >
-          <i class="fa-solid fa-camera mr-2"></i>Scan Again
-        </button>
+        <div class="flex gap-2">
+          <button
+            v-if="capturedImage"
+            @click="goToAnalyze"
+            class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-xl transition-all cursor-pointer"
+            :class="isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : ''"
+            :title="t.fullAnalysis"
+          >
+            <i class="fa-solid fa-microscope"></i>
+          </button>
+          <button
+            @click="resetScan"
+            class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer"
+          >
+            <i class="fa-solid fa-camera mr-2"></i>{{ t.scanAgain }}
+          </button>
+        </div>
       </div>
 
       <ResultPanel :data="scanResult" source="scan" />
@@ -409,31 +471,5 @@ onUnmounted(() => {
 .scanner-container :deep(#reader__dashboard_section_swaplink),
 .scanner-container :deep(#reader__header_message) {
   display: none !important;
-}
-
-/* Scan line animation */
-@keyframes scanLine {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(
-      250px
-    ); /* Approx 64 * 4 = 256px, adjust for safe area */
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.animate-scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(to right, transparent, #4ade80, transparent);
-  animation: scanLine 2.5s ease-in-out infinite;
-  box-shadow: 0 0 15px rgba(74, 222, 128, 0.6);
 }
 </style>

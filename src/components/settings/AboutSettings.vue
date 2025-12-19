@@ -19,7 +19,7 @@ defineProps({
         : 'bg-white/90 backdrop-blur border-gray-100',
     ]"
   >
-    <div class="flex items-center gap-3 mb-4">
+    <div class="flex items-center gap-3 mb-4 min-h-[56px]">
       <div
         class="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-500/20"
       >

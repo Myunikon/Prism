@@ -26,6 +26,18 @@ const handleWifiGenerate = (wifiString) => {
   }
   showWifiModal.value = false;
 };
+const strings = {
+  en: {
+    qrCode: "QR Code",
+    barcode: "Barcode",
+  },
+  id: {
+    qrCode: "Kode QR",
+    barcode: "Barcode",
+  },
+};
+
+const t = computed(() => strings[store.config.language] || strings.en);
 </script>
 
 <template>
@@ -49,7 +61,7 @@ const handleWifiGenerate = (wifiString) => {
             : 'text-gray-500 hover:text-gray-700',
         ]"
       >
-        <i class="fa-solid fa-qrcode"></i>QR Code
+        <i class="fa-solid fa-qrcode"></i>{{ t.qrCode }}
       </button>
       <button
         @click="generatorType = 'barcode'"
@@ -62,7 +74,7 @@ const handleWifiGenerate = (wifiString) => {
             : 'text-gray-500 hover:text-gray-700',
         ]"
       >
-        <i class="fa-solid fa-barcode"></i>Barcode
+        <i class="fa-solid fa-barcode"></i>{{ t.barcode }}
       </button>
     </div>
 

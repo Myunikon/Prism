@@ -1,0 +1,51 @@
+/**
+ * Logs View Translations
+ */
+export const logsStrings = {
+  en: {
+    title: "Activity Log",
+    history: "History",
+    cases: "Evidence",
+    items: "items",
+    clear: "Clear",
+    confirmTitle: "Clear Data?",
+    confirmMessage:
+      "This will permanently delete data. This action cannot be undone.",
+    confirmBtn: "Delete",
+    cancel: "Cancel",
+    empty: "No activity recorded",
+    emptyHelper: "Scan QR codes or use tools",
+    emptyCases: "No evidence saved",
+    emptyCasesHint: "Add items to case from analysis results",
+    backTo: "Back to List",
+    viewFull: "View Full Analysis",
+    copy: "Copy",
+    copied: "Copied to clipboard!",
+    cleared: "Data cleared successfully",
+    export: "Export Report",
+    exporting: "Generating PDF...",
+  },
+  id: {
+    title: "Catatan Aktivitas",
+    history: "Riwayat",
+    cases: "Bukti Kasus",
+    items: "item",
+    clear: "Hapus",
+    confirmTitle: "Hapus Data?",
+    confirmMessage:
+      "Ini akan menghapus data secara permanen. Tindakan ini tidak dapat dibatalkan.",
+    confirmBtn: "Hapus",
+    cancel: "Batal",
+    empty: "Belum ada aktivitas",
+    emptyHelper: "Pindai kode QR atau gunakan alat",
+    emptyCases: "Belum ada bukti tersimpan",
+    emptyCasesHint: "Tambahkan item ke kasus dari hasil analisis",
+    backTo: "Kembali ke Daftar",
+    viewFull: "Lihat Analisis Lengkap",
+    copy: "Salin",
+    copied: "Disalin ke clipboard!",
+    cleared: "Data berhasil dihapus",
+    export: "Ekspor Laporan",
+    exporting: "Membuat PDF...",
+  },
+};

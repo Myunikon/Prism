@@ -29,16 +29,28 @@ export const store = reactive({
         cameraId: null // Store specific camera device ID
     },
 
+    // Temporary storage for image passing
+    previewImage: null,
+
     // History
     history: [],
 
     // Actions
+    setPreviewImage(data) {
+        this.previewImage = data;
+    },
+
     setTab(tab) {
         this.currentTab = tab;
         this.persistState();
     },
 
     setConfig(key, value) {
+        // Normalize boolean values
+        if (key === 'animations') {
+            value = value === true; // Ensure it's exactly true or false
+        }
+        
         this.config[key] = value;
         this.persistState();
         
@@ -171,6 +183,12 @@ export const store = reactive({
                 if (savedState.currentTab) {
                     this.currentTab = savedState.currentTab;
                 }
+            }
+            
+            // IMMEDIATELY normalize animations to ensure it's a proper boolean
+            // This must happen before any component reads the value
+            if (typeof this.config.animations !== 'boolean') {
+                this.config.animations = true; // Default to true if not a boolean
             }
 
             // Load History

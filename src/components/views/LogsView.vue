@@ -1,10 +1,11 @@
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import { store } from "../../store/state.js";
-import { useCase } from "../../composables/useCase.js"; // New composable
+import { useCase } from "../../composables/useCase.js";
 import ResultPanel from "../common/ResultPanel.vue";
 import ConfirmModal from "../common/ConfirmModal.vue";
 import Toast from "../common/Toast.vue";
+import { logsStrings } from "../../i18n/logs.js";
 
 const isDark = computed(() => store.config.darkMode);
 const animationsEnabled = computed(() => store.config.animations !== false);
@@ -26,58 +27,7 @@ const showToast = ref(false);
 const toastMessage = ref("");
 const toastType = ref("success");
 
-const translations = {
-  en: {
-    title: "Activity Log",
-    history: "History",
-    cases: "Evidence",
-    items: "items",
-    clear: "Clear",
-    confirmTitle: "Clear Data?",
-    confirmMessage:
-      "This will permanently delete data. This action cannot be undone.",
-    confirmBtn: "Delete",
-    cancel: "Cancel",
-    empty: "No activity recorded",
-    emptyHelper: "Scan QR codes or use tools",
-    emptyCases: "No evidence saved",
-    emptyCasesHint: "Add items to case from analysis results",
-    backTo: "Back to List",
-    viewFull: "View Full Analysis",
-    copy: "Copy",
-    copied: "Copied to clipboard!",
-    cleared: "Data cleared successfully",
-    export: "Export Report",
-    exporting: "Generating PDF...",
-  },
-  id: {
-    title: "Catatan Aktivitas",
-    history: "Riwayat",
-    cases: "Bukti Kasus",
-    items: "item",
-    clear: "Hapus",
-    confirmTitle: "Hapus Data?",
-    confirmMessage:
-      "Ini akan menghapus data secara permanen. Tindakan ini tidak dapat dibatalkan.",
-    confirmBtn: "Hapus",
-    cancel: "Batal",
-    empty: "Belum ada aktivitas",
-    emptyHelper: "Pindai kode QR atau gunakan alat",
-    emptyCases: "Belum ada bukti tersimpan",
-    emptyCasesHint: "Tambahkan item ke kasus dari hasil analisis",
-    backTo: "Kembali ke Daftar",
-    viewFull: "Lihat Analisis Lengkap",
-    copy: "Salin",
-    copied: "Disalin ke clipboard!",
-    cleared: "Data berhasil dihapus",
-    export: "Ekspor Laporan",
-    exporting: "Membuat PDF...",
-  },
-};
-
-const t = computed(
-  () => translations[store.config.language] || translations.en
-);
+const t = computed(() => logsStrings[store.config.language] || logsStrings.en);
 
 onMounted(() => {
   loadCases();

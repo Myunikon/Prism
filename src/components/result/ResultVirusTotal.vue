@@ -27,7 +27,7 @@ const emit = defineEmits(["startScan"]);
           isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700',
         ]"
       >
-        <i class="fa-solid fa-circle-exclamation mr-2"></i>Error:
+        <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ t.error }}:
         {{ vtResult.error }}
       </div>
       <div v-else class="grid grid-cols-2 gap-4">

@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import { store } from "../../store/state.js";
 import TacticalPayloadForge from "./TacticalPayloadForge.vue";
 import NFCWriterButton from "./NFCWriterButton.vue";
+import { qrGeneratorStrings } from "../../i18n/generator.js";
 
 const props = defineProps(["modelValue"]);
 const emit = defineEmits(["openWifi"]);
@@ -150,6 +151,11 @@ const setPayload = (val) => {
 };
 
 // Expose setPayload for parent to use (e.g. Wifi Modal)
+
+const t = computed(
+  () => qrGeneratorStrings[store.config.language] || qrGeneratorStrings.en
+);
+
 defineExpose({ setPayload });
 </script>
 
@@ -176,13 +182,13 @@ defineExpose({ setPayload });
               class="font-bold text-sm"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
-              QR Code Generator
+              {{ t.generatorTitle }}
             </h3>
             <p
               class="text-xs"
               :class="isDark ? 'text-gray-500' : 'text-gray-400'"
             >
-              Create custom QR codes
+              {{ t.generatorDesc }}
             </p>
           </div>
         </div>
@@ -197,7 +203,7 @@ defineExpose({ setPayload });
               ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
               : 'bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400',
           ]"
-          placeholder="Enter URL, text, WiFi config..."
+          :placeholder="t.inputPlaceholder"
         ></textarea>
 
         <div class="flex flex-wrap gap-1.5 mt-3">
@@ -237,8 +243,7 @@ defineExpose({ setPayload });
         ]"
       >
         <span class="flex items-center gap-2">
-          <i class="fa-solid fa-palette text-purple-500"></i>Customize Colors &
-          Options
+          <i class="fa-solid fa-palette text-purple-500"></i>{{ t.customize }}
         </span>
         <i
           :class="[
@@ -262,7 +267,7 @@ defineExpose({ setPayload });
             class="text-xs font-semibold mb-2"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            Color Presets
+            {{ t.colorPresets }}
           </p>
           <div class="flex flex-wrap gap-2">
             <button
@@ -305,7 +310,7 @@ defineExpose({ setPayload });
               class="text-xs font-semibold mb-1.5"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
-              Foreground
+              {{ t.foreground }}
             </p>
             <div class="flex items-center gap-2">
               <input
@@ -330,7 +335,7 @@ defineExpose({ setPayload });
               class="text-xs font-semibold mb-1.5"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
-              Background
+              {{ t.background }}
             </p>
             <div class="flex items-center gap-2">
               <input
@@ -358,7 +363,7 @@ defineExpose({ setPayload });
             class="text-xs font-semibold mb-1.5"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            Error Correction
+            {{ t.errorCorrection }}
           </p>
           <div class="grid grid-cols-4 gap-2">
             <button
@@ -389,7 +394,7 @@ defineExpose({ setPayload });
               class="text-xs font-semibold"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
-              Embed Logo
+              {{ t.embedLogo }}
             </p>
             <button
               v-if="qrLogo"
@@ -399,7 +404,7 @@ defineExpose({ setPayload });
               "
               class="text-[10px] text-red-400 hover:text-red-500 font-bold"
             >
-              Remove
+              {{ t.remove }}
             </button>
           </div>
 
@@ -433,7 +438,7 @@ defineExpose({ setPayload });
                   class="text-[10px] font-medium"
                   :class="isDark ? 'text-gray-400' : 'text-gray-500'"
                 >
-                  {{ qrLogo ? "Change Image" : "Upload Image" }}
+                  {{ qrLogo ? t.changeImage : t.uploadImage }}
                 </span>
               </div>
             </label>
@@ -444,7 +449,7 @@ defineExpose({ setPayload });
                 <span
                   class="text-[10px]"
                   :class="isDark ? 'text-gray-400' : 'text-gray-500'"
-                  >Size</span
+                  >{{ t.size }}</span
                 >
                 <span
                   class="text-[10px] font-bold"
@@ -463,8 +468,8 @@ defineExpose({ setPayload });
                 class="text-[10px] text-orange-400 mt-1"
                 v-if="qrLogoSize > 25 && qrErrorLevel !== 'H'"
               >
-                <i class="fa-solid fa-triangle-exclamation mr-1"></i>High error
-                correction 'H' recommended.
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i
+                >{{ t.highErrorWarn }}
               </p>
             </div>
           </div>
@@ -539,7 +544,7 @@ defineExpose({ setPayload });
             class="text-xs"
             :class="isDark ? 'text-gray-500' : 'text-gray-400'"
           >
-            Preview
+            {{ t.preview }}
           </p>
         </div>
       </div>

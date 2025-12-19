@@ -44,17 +44,62 @@ const autoDetect = async () => {
   }
 };
 
+const strings = {
+  en: {
+    input: "Input",
+    output: "Output",
+    chars: "chars",
+    magicWand: "Auto-detect & Decode",
+    pasteHere: "Paste text here...",
+    resultHere: "Result will appear here...",
+    copy: "Copy",
+    useAsInput: "Use as Input",
+    cat_decode: "Decode",
+    cat_encode: "Encode",
+    cat_cipher: "Cipher",
+    cat_security: "Security",
+    cat_osint: "OSINT",
+    cat_network: "Network",
+    cat_hash: "Hash",
+    cat_extract: "Extract",
+    cat_format: "Format",
+    cat_util: "Utils",
+  },
+  id: {
+    input: "Masukan",
+    output: "Keluaran",
+    chars: "karakter",
+    magicWand: "Deteksi & Decode Otomatis",
+    pasteHere: "Tempel teks di sini...",
+    resultHere: "Hasil akan muncul di sini...",
+    copy: "Salin",
+    useAsInput: "Gunakan sebagai Input",
+    cat_decode: "Dekode",
+    cat_encode: "Enkode",
+    cat_cipher: "Sandi",
+    cat_security: "Keamanan",
+    cat_osint: "OSINT",
+    cat_network: "Jaringan",
+    cat_hash: "Hash",
+    cat_extract: "Ekstrak",
+    cat_format: "Format",
+    cat_util: "Utilitas",
+  },
+};
+
+const t = computed(() => strings[store.config.language] || strings.en);
+
 const categories = [
-  { id: "decode", name: "Decode", icon: "fa-unlock" },
-  { id: "encode", name: "Encode", icon: "fa-lock" },
-  { id: "cipher", name: "Cipher", icon: "fa-mask" },
-  { id: "security", name: "Security", icon: "fa-shield-virus" },
-  { id: "osint", name: "OSINT", icon: "fa-user-secret" },
-  { id: "network", name: "Network", icon: "fa-network-wired" },
-  { id: "hash", name: "Hash", icon: "fa-fingerprint" },
-  { id: "extract", name: "Extract", icon: "fa-filter" },
-  { id: "format", name: "Format", icon: "fa-code" },
-  { id: "util", name: "Utils", icon: "fa-screwdriver-wrench" },
+  { id: "decode", icon: "fa-unlock" },
+  { id: "encode", icon: "fa-lock" },
+  { id: "cipher", icon: "fa-mask" },
+  { id: "security", icon: "fa-shield-virus" },
+  { id: "osint", icon: "fa-user-secret" },
+  { id: "network", icon: "fa-network-wired" },
+  { id: "hash", icon: "fa-fingerprint" },
+  { id: "extract", icon: "fa-filter" },
+  { id: "format", icon: "fa-code" },
+  { id: "util", icon: "fa-screwdriver-wrench" },
 ];
 
 const activeCategory = ref("decode");
@@ -85,13 +130,13 @@ const filteredTools = computed(() =>
         <label
           class="text-sm font-bold"
           :class="isDark ? 'text-white' : 'text-gray-800'"
-          >Input</label
+          >{{ t.input }}</label
         >
         <div class="ml-auto flex items-center gap-3">
           <span
             class="text-xs"
             :class="isDark ? 'text-gray-500' : 'text-gray-400'"
-            >{{ input.length }} chars</span
+            >{{ input.length }} {{ t.chars }}</span
           >
           <button
             @click="autoDetect"
@@ -101,7 +146,7 @@ const filteredTools = computed(() =>
                 ? 'bg-gray-700 border-gray-600 text-yellow-400 hover:bg-gray-600'
                 : 'bg-white border-gray-200 text-yellow-500 hover:bg-gray-50',
             ]"
-            title="Auto-detect & Decode (Magic Wand)"
+            :title="t.magicWand"
           >
             <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
           </button>
@@ -116,7 +161,7 @@ const filteredTools = computed(() =>
             ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
             : 'bg-gray-50 border-gray-200 text-gray-700 placeholder-gray-400',
         ]"
-        placeholder="Paste text here..."
+        :placeholder="t.pasteHere"
       ></textarea>
     </div>
 
@@ -135,7 +180,7 @@ const filteredTools = computed(() =>
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
         ]"
       >
-        <i :class="['fa-solid', cat.icon]"></i>{{ cat.name }}
+        <i :class="['fa-solid', cat.icon]"></i>{{ t["cat_" + cat.id] }}
       </button>
     </div>
 
@@ -184,7 +229,7 @@ const filteredTools = computed(() =>
         <label
           class="text-sm font-bold"
           :class="isDark ? 'text-white' : 'text-gray-800'"
-          >Output</label
+          >{{ t.output }}</label
         >
         <span
           v-if="activeTool"
@@ -205,7 +250,7 @@ const filteredTools = computed(() =>
             ? 'bg-gray-700 border-gray-600 text-white'
             : 'bg-gray-50 border-gray-200 text-gray-700',
         ]"
-        placeholder="Result will appear here..."
+        :placeholder="t.resultHere"
       ></textarea>
       <div class="flex gap-2 mt-3">
         <button
@@ -213,7 +258,7 @@ const filteredTools = computed(() =>
           @click="navigator.clipboard.writeText(output)"
           class="flex-1 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
         >
-          <i class="fa-regular fa-copy"></i>Copy
+          <i class="fa-regular fa-copy"></i>{{ t.copy }}
         </button>
         <button
           v-if="output"
@@ -229,7 +274,7 @@ const filteredTools = computed(() =>
               : 'bg-gray-100 hover:bg-gray-200 text-gray-600',
           ]"
         >
-          <i class="fa-solid fa-arrow-up"></i> Use as Input
+          <i class="fa-solid fa-arrow-up"></i> {{ t.useAsInput }}
         </button>
       </div>
     </div>

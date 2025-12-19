@@ -284,10 +284,4 @@ onMounted(() => {
 .animate-fade-scale {
   animation: fadeScale 0.3s ease-out;
 }
-
-.motion-reduce * {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
-}
 </style>

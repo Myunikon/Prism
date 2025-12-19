@@ -20,7 +20,7 @@ const copyToClipboard = () => {
         class="text-xs font-bold uppercase tracking-wide mb-2 block"
         :class="isDark ? 'text-gray-400' : 'text-gray-500'"
       >
-        <i class="fa-solid fa-file-lines mr-1"></i>Decoded Content
+        <i class="fa-solid fa-file-lines mr-1"></i>{{ t.decodedContent }}
       </label>
       <div
         :class="[
