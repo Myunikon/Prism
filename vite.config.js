@@ -35,7 +35,7 @@ export default defineConfig({
       },
     }),
   ],
-  base: "/Prism/",
+  base: "./",
   build: {
     outDir: "dist",
     assetsDir: "assets",
