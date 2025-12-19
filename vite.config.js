@@ -35,7 +35,7 @@ export default defineConfig({
       },
     }),
   ],
-  base: "/Qrops/",
+  base: "/Prism/",
   build: {
     outDir: "dist",
     assetsDir: "assets",
