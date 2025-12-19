@@ -1,0 +1,704 @@
+<script setup>
+import { computed, ref, watch, nextTick } from "vue";
+import { store } from "../../store/state.js";
+import ResultPanel from "../common/ResultPanel.vue";
+import { performELA } from "../../utils/ela.js";
+import { performLSBAnalysis } from "../../utils/stego.js";
+import { calculateHash } from "../../utils/forensics.js";
+import { extractExif } from "../../utils/exif.js";
+import { extractImageMeta } from "../../utils/imageMeta.js";
+import { Html5Qrcode } from "html5-qrcode";
+import ExifDataPanel from "../analyze/ExifDataPanel.vue";
+import Tesseract from "tesseract.js";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+const isDark = computed(() => store.config.darkMode);
+const animationsEnabled = computed(() => store.config.animations !== false);
+const isDragging = ref(false);
+const fileData = ref(null);
+const fileInfo = ref(null);
+const previewUrl = ref(null);
+const elaUrl = ref(null);
+const fileHash = ref(null);
+const isProcessing = ref(false);
+const imageMeta = ref(null);
+const exifData = ref(null);
+const lsbUrl = ref(null);
+const ocrText = ref(null);
+const isOcrLoading = ref(false);
+const mapContainer = ref(null);
+let mapInstance = null;
+
+const onDrop = async (e) => {
+  isDragging.value = false;
+  const file = e.dataTransfer.files[0];
+  if (file) await processFile(file);
+};
+
+const onFileSelect = async (e) => {
+  const file = e.target.files[0];
+  if (file) await processFile(file);
+};
+
+const processFile = async (file) => {
+  isProcessing.value = true;
+  fileInfo.value = {
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    lastModified: new Date(file.lastModified).toLocaleString(),
+  };
+
+  try {
+    fileHash.value = await calculateHash(file);
+  } catch (e) {
+    fileHash.value = "Error calculating hash";
+  }
+
+  if (file.type.startsWith("image/")) {
+    previewUrl.value = URL.createObjectURL(file);
+
+    // Extract image metadata
+    imageMeta.value = await extractImageMeta(file);
+
+    // Extract EXIF data
+    try {
+      exifData.value = await extractExif(file);
+    } catch (e) {
+      console.log("EXIF extraction failed", e);
+      exifData.value = null;
+    }
+
+    try {
+      elaUrl.value = await performELA(file);
+    } catch (e) {
+      console.error("ELA Error", e);
+    }
+
+    try {
+      const html5QrCode = new Html5Qrcode("reader-hidden");
+      const result = await html5QrCode.scanFileV2(file, true);
+      fileData.value = result.decodedText;
+      if (result) {
+        store.setScanResult(result.decodedText, result);
+        store.addHistory("FILE_SCAN", result.decodedText, {
+          fileName: file.name,
+        });
+      }
+    } catch (err) {
+      // Expected if image has no QR code
+      console.info("Info: No QR/Barcode detected in image (Forensics only).");
+      fileData.value = "FORENSIC_ONLY";
+    }
+  } else {
+    previewUrl.value = null;
+    elaUrl.value = null;
+    imageMeta.value = null;
+    exifData.value = null;
+    const text = await file.text();
+    fileData.value = text;
+    store.addHistory("FILE_ANALYZE", text.substring(0, 100), {
+      fileName: file.name,
+    });
+  }
+  isProcessing.value = false;
+};
+
+const resetAnalysis = () => {
+  fileData.value = null;
+  fileInfo.value = null;
+  previewUrl.value = null;
+  elaUrl.value = null;
+  fileHash.value = null;
+  imageMeta.value = null;
+  imageMeta.value = null;
+  exifData.value = null;
+  lsbUrl.value = null;
+  ocrText.value = null;
+  if (mapInstance) {
+    mapInstance.remove();
+    mapInstance = null;
+  }
+};
+
+const runLSB = async () => {
+  if (!previewUrl.value) return;
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
+  img.src = previewUrl.value;
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const lsbData = performLSBAnalysis(imageData);
+    ctx.putImageData(lsbData, 0, 0);
+    lsbUrl.value = canvas.toDataURL();
+  };
+};
+
+const preprocessImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+
+      // Get raw data
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      // Convert to Grayscale & Binarize (Thresholding)
+      // Threshold level: 128 is standard, but adjustable.
+      // Using a simple luminance formula: 0.299R + 0.587G + 0.114B
+      for (let i = 0; i < data.length; i += 4) {
+        const grayscale =
+          data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+
+        // Simple binarization: if > 128 white, else black
+        // This makes text sharp black on white background
+        const val = grayscale > 128 ? 255 : 0;
+
+        data[i] = val; // R
+        data[i + 1] = val; // G
+        data[i + 2] = val; // B
+        // Alpha (i+3) stays same
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+  });
+};
+
+const runOCR = async () => {
+  if (!previewUrl.value) return;
+  isOcrLoading.value = true;
+  ocrText.value = null;
+
+  try {
+    // Stage 1: Pre-process image for high contrast
+    const processedImage = await preprocessImage(previewUrl.value);
+
+    // Stage 2: Recognize with multiple languages just in case
+    // Using 'eng+ind' if possible or just 'eng' then 'ind'
+    // For now we stick to 'eng' but pre-processing changes everything.
+    const result = await Tesseract.recognize(processedImage, "eng", {
+      logger: (m) => console.log(m), // Optional logging
+    });
+
+    ocrText.value = result.data.text.trim();
+
+    if (result.data.text.length < 5) {
+      ocrText.value += "\n\n(Low confidence result - try a cleared image)";
+    }
+  } catch (e) {
+    ocrText.value = "OCR Failed: " + e.message;
+    console.error(e);
+  } finally {
+    isOcrLoading.value = false;
+  }
+};
+
+const initMap = () => {
+  if (!exifData.value || !exifData.value.gps || !mapContainer.value) return;
+
+  const lat = parseFloat(exifData.value.gps.lat);
+  const lon = parseFloat(exifData.value.gps.lon);
+
+  if (lat && lon) {
+    if (mapInstance) mapInstance.remove();
+    mapInstance = L.map(mapContainer.value).setView([lat, lon], 13);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(mapInstance);
+    L.marker([lat, lon])
+      .addTo(mapInstance)
+      .bindPopup(`Location: ${lat.toFixed(4)}, ${lon.toFixed(4)}`)
+      .openPopup();
+  }
+};
+
+// Watch for exif data to init map
+watch(exifData, async (newVal) => {
+  if (newVal && newVal.gps) {
+    await nextTick();
+    initMap();
+  }
+});
+</script>
+
+<template>
+  <div
+    :class="[
+      'space-y-4 pb-20 min-h-full flex flex-col',
+      animationsEnabled ? 'animate-fade-in' : '',
+    ]"
+  >
+    <!-- Hidden Reader -->
+    <div id="reader-hidden" class="absolute top-[-9999px] left-[-9999px]"></div>
+
+    <!-- Upload State -->
+    <div
+      v-if="!fileData"
+      @dragover.prevent="isDragging = true"
+      @dragleave.prevent="isDragging = false"
+      @drop.prevent="onDrop"
+      :class="[
+        'flex-1 flex flex-col items-center justify-center border-2 border-dashed rounded-2xl transition-all cursor-pointer min-h-[60vh] md:min-h-0',
+        isDragging
+          ? 'border-purple-500 bg-purple-50/50'
+          : isDark
+          ? 'border-gray-600 bg-gray-800/50 hover:border-purple-500 hover:bg-purple-900/20'
+          : 'border-gray-300 bg-white/80 backdrop-blur hover:border-purple-400 hover:bg-purple-50/30',
+      ]"
+    >
+      <div class="text-center p-8">
+        <div
+          class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-xl"
+        >
+          <i class="fa-solid fa-cloud-arrow-up text-3xl text-white"></i>
+        </div>
+        <h3
+          class="text-xl font-bold mb-2"
+          :class="isDark ? 'text-white' : 'text-gray-800'"
+        >
+          Drop file to analyze
+        </h3>
+        <p
+          class="text-sm mb-6"
+          :class="isDark ? 'text-gray-400' : 'text-gray-500'"
+        >
+          Supports images, QR codes, and text files
+        </p>
+        <label
+          class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all cursor-pointer"
+        >
+          <i class="fa-solid fa-folder-open"></i>
+          Browse Files
+          <input
+            type="file"
+            class="hidden"
+            @change="onFileSelect"
+            accept="image/*,.txt,.json,.xml"
+          />
+        </label>
+        <div
+          class="mt-6 flex items-center justify-center gap-4 text-xs"
+          :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+        >
+          <span
+            ><i class="fa-solid fa-image mr-1 text-purple-500"></i>Images</span
+          >
+          <span
+            ><i class="fa-solid fa-qrcode mr-1 text-blue-500"></i>QR Codes</span
+          >
+          <span
+            ><i class="fa-solid fa-file-code mr-1 text-green-500"></i
+            >JSON/XML</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis State -->
+    <div v-else class="space-y-4">
+      <!-- File Header -->
+      <div
+        :class="[
+          'rounded-2xl p-4 shadow-sm border flex items-center justify-between',
+          isDark
+            ? 'bg-gray-800 border-gray-700'
+            : 'bg-white/90 backdrop-blur border-gray-100',
+        ]"
+      >
+        <div class="flex items-center gap-3 min-w-0 pr-2">
+          <div
+            class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md flex-shrink-0"
+          >
+            <i class="fa-solid fa-file text-white text-lg"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <h4
+              class="text-sm font-bold truncate"
+              :class="isDark ? 'text-white' : 'text-gray-800'"
+              :title="fileInfo?.name"
+            >
+              {{ fileInfo?.name }}
+            </h4>
+            <p
+              class="text-xs truncate"
+              :class="isDark ? 'text-gray-400' : 'text-gray-500'"
+            >
+              {{ (fileInfo?.size / 1024).toFixed(1) }} KB · {{ fileInfo?.type }}
+            </p>
+          </div>
+        </div>
+        <button
+          @click="resetAnalysis"
+          class="p-2.5 rounded-xl transition-colors cursor-pointer flex-shrink-0"
+          :class="
+            isDark
+              ? 'text-gray-400 hover:text-red-400 hover:bg-red-900/30'
+              : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
+          "
+        >
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Image Forensics Section -->
+      <div
+        v-if="previewUrl"
+        :class="[
+          'rounded-2xl p-5 shadow-sm border',
+          isDark
+            ? 'bg-gray-800 border-gray-700'
+            : 'bg-white/90 backdrop-blur border-gray-100',
+        ]"
+      >
+        <h3
+          class="text-sm font-bold mb-4 flex items-center gap-2"
+          :class="isDark ? 'text-white' : 'text-gray-800'"
+        >
+          <i class="fa-solid fa-microscope text-purple-500"></i>
+          Image Forensics
+        </h3>
+
+        <!-- Image Preview and ELA -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <p
+              class="text-xs font-medium mb-2"
+              :class="isDark ? 'text-gray-400' : 'text-gray-500'"
+            >
+              Original
+            </p>
+            <img
+              :src="previewUrl"
+              :class="[
+                'w-full h-40 object-contain rounded-xl border',
+                isDark
+                  ? 'bg-gray-900 border-gray-600'
+                  : 'bg-gray-100 border-gray-200',
+              ]"
+            />
+          </div>
+          <div>
+            <p class="text-xs font-medium mb-2 text-purple-500">
+              Error Level Analysis
+            </p>
+            <img
+              v-if="elaUrl"
+              :src="elaUrl"
+              class="w-full h-40 object-contain bg-gray-900 rounded-xl cursor-pointer hover:scale-105 transition-transform"
+              @click="store.setPreviewImage(elaUrl)"
+            />
+            <div
+              v-else
+              :class="[
+                'w-full h-40 flex items-center justify-center rounded-xl text-sm',
+                isDark
+                  ? 'bg-gray-700 text-gray-400'
+                  : 'bg-gray-100 text-gray-400',
+              ]"
+            >
+              <i class="fa-solid fa-spinner animate-spin mr-2"></i>
+              Processing...
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Forensics Controls -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <button
+            @click="runLSB"
+            class="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all"
+          >
+            <i class="fa-solid fa-layer-group mr-2"></i>Stego LSB Check
+          </button>
+          <button
+            @click="runOCR"
+            :disabled="isOcrLoading"
+            class="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all"
+          >
+            <i
+              class="fa-solid"
+              :class="isOcrLoading ? 'fa-spinner animate-spin' : 'fa-font'"
+            ></i>
+            Extract Text (OCR)
+          </button>
+        </div>
+
+        <!-- LSB & OCR Results -->
+        <div
+          v-if="lsbUrl || ocrText"
+          class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
+        >
+          <div v-if="lsbUrl">
+            <p class="text-xs font-bold mb-2 text-indigo-400">
+              LSB Noise Plane
+            </p>
+            <img
+              :src="lsbUrl"
+              class="w-full h-40 object-contain bg-black rounded-xl border border-indigo-500/30"
+            />
+          </div>
+          <div v-if="ocrText" class="relative">
+            <p class="text-xs font-bold mb-2 text-emerald-400">
+              Extracted Text
+            </p>
+            <textarea
+              readonly
+              class="w-full h-40 bg-gray-900 text-white text-xs p-3 rounded-xl font-mono resize-none border border-emerald-500/30"
+              >{{ ocrText }}</textarea
+            >
+            <button
+              @click="navigator.clipboard.writeText(ocrText)"
+              class="absolute top-8 right-2 p-1.5 bg-black/50 hover:bg-black/80 text-white rounded text-xs"
+            >
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- GPS Map -->
+        <div v-if="exifData?.gps" class="mb-4">
+          <p class="text-xs font-bold mb-2 text-orange-400">
+            <i class="fa-solid fa-map-location-dot mr-2"></i>GPS Location
+          </p>
+          <div
+            ref="mapContainer"
+            class="w-full h-48 rounded-xl z-0 border border-gray-600"
+          ></div>
+        </div>
+
+        <!-- Basic Image Metadata -->
+        <div
+          :class="[
+            'p-4 rounded-xl border mb-4',
+            isDark
+              ? 'bg-gray-900 border-gray-700'
+              : 'bg-gray-50 border-gray-100',
+          ]"
+        >
+          <h4
+            class="text-xs font-bold uppercase tracking-wide mb-3 flex items-center gap-2"
+            :class="isDark ? 'text-gray-400' : 'text-gray-500'"
+          >
+            <i class="fa-solid fa-image text-blue-500"></i>Image Info
+          </h4>
+          <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+            <div
+              :class="[
+                'p-2 rounded-lg text-center',
+                isDark ? 'bg-gray-800' : 'bg-white',
+              ]"
+            >
+              <p
+                class="text-[10px] font-medium uppercase"
+                :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+              >
+                Size
+              </p>
+              <p
+                class="text-xs font-bold"
+                :class="isDark ? 'text-white' : 'text-gray-800'"
+              >
+                {{ imageMeta?.width }}×{{ imageMeta?.height }}
+              </p>
+            </div>
+            <div
+              :class="[
+                'p-2 rounded-lg text-center',
+                isDark ? 'bg-gray-800' : 'bg-white',
+              ]"
+            >
+              <p
+                class="text-[10px] font-medium uppercase"
+                :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+              >
+                MP
+              </p>
+              <p
+                class="text-xs font-bold"
+                :class="isDark ? 'text-white' : 'text-gray-800'"
+              >
+                {{ imageMeta?.megapixels }}
+              </p>
+            </div>
+            <div
+              :class="[
+                'p-2 rounded-lg text-center',
+                isDark ? 'bg-gray-800' : 'bg-white',
+              ]"
+            >
+              <p
+                class="text-[10px] font-medium uppercase"
+                :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+              >
+                Ratio
+              </p>
+              <p
+                class="text-xs font-bold"
+                :class="isDark ? 'text-white' : 'text-gray-800'"
+              >
+                {{ imageMeta?.aspectRatio }}
+              </p>
+            </div>
+            <div
+              :class="[
+                'p-2 rounded-lg text-center',
+                isDark ? 'bg-gray-800' : 'bg-white',
+              ]"
+            >
+              <p
+                class="text-[10px] font-medium uppercase"
+                :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+              >
+                Orient
+              </p>
+              <p
+                class="text-xs font-bold"
+                :class="isDark ? 'text-white' : 'text-gray-800'"
+              >
+                {{ imageMeta?.orientation }}
+              </p>
+            </div>
+            <div
+              :class="[
+                'p-2 rounded-lg text-center',
+                isDark ? 'bg-gray-800' : 'bg-white',
+              ]"
+            >
+              <p
+                class="text-[10px] font-medium uppercase"
+                :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+              >
+                Format
+              </p>
+              <p
+                class="text-xs font-bold"
+                :class="isDark ? 'text-white' : 'text-gray-800'"
+              >
+                {{ imageMeta?.mimeType?.split("/")[1]?.toUpperCase() }}
+              </p>
+            </div>
+            <div
+              :class="[
+                'p-2 rounded-lg text-center',
+                isDark ? 'bg-gray-800' : 'bg-white',
+              ]"
+            >
+              <p
+                class="text-[10px] font-medium uppercase"
+                :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+              >
+                File
+              </p>
+              <p
+                class="text-xs font-bold"
+                :class="isDark ? 'text-white' : 'text-gray-800'"
+              >
+                {{ imageMeta?.fileSizeFormatted }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXIF Data (if available) -->
+        <ExifDataPanel :exifData="exifData" :isDark="isDark" />
+
+        <!-- Hash -->
+        <div
+          :class="[
+            'mt-4 p-3 rounded-xl border',
+            isDark
+              ? 'bg-gray-900 border-gray-700'
+              : 'bg-gray-50 border-gray-100',
+          ]"
+        >
+          <p
+            class="text-xs font-medium mb-1 flex items-center gap-1"
+            :class="isDark ? 'text-gray-400' : 'text-gray-500'"
+          >
+            <i class="fa-solid fa-fingerprint text-cyan-500"></i>SHA-256 Hash
+          </p>
+          <p
+            class="text-xs font-mono break-all select-all"
+            :class="isDark ? 'text-gray-300' : 'text-gray-700'"
+          >
+            {{ fileHash || "Calculating..." }}
+          </p>
+        </div>
+
+        <!-- QR/Barcode Status -->
+        <div
+          :class="[
+            'mt-4 p-4 rounded-xl flex items-center gap-3',
+            fileData && fileData !== 'FORENSIC_ONLY'
+              ? isDark
+                ? 'bg-green-900/20'
+                : 'bg-green-50'
+              : isDark
+              ? 'bg-gray-700'
+              : 'bg-gray-100',
+          ]"
+        >
+          <i
+            :class="[
+              'fa-solid text-xl',
+              fileData && fileData !== 'FORENSIC_ONLY'
+                ? 'fa-check-circle text-green-500'
+                : 'fa-qrcode text-gray-400',
+            ]"
+          ></i>
+          <div>
+            <p
+              class="text-sm font-medium"
+              :class="
+                fileData && fileData !== 'FORENSIC_ONLY'
+                  ? 'text-green-600'
+                  : isDark
+                  ? 'text-gray-400'
+                  : 'text-gray-500'
+              "
+            >
+              {{
+                fileData && fileData !== "FORENSIC_ONLY"
+                  ? "QR/Barcode Detected"
+                  : "No QR/Barcode Found"
+              }}
+            </p>
+            <p
+              class="text-xs"
+              :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+            >
+              {{
+                fileData && fileData !== "FORENSIC_ONLY"
+                  ? "Decoded content available below"
+                  : "Only image analysis performed"
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detection Result -->
+      <ResultPanel
+        v-if="fileData && fileData !== 'FORENSIC_ONLY'"
+        :data="fileData"
+        :source="'FILE_SCAN'"
+      />
+    </div>
+  </div>
+</template>
