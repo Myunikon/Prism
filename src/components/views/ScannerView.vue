@@ -116,8 +116,10 @@ const stopScanner = async () => {
       try {
         await html5QrcodeScanner.stop();
       } catch (err) {
-        // Ignore "removeChild" error as it occurs if DOM is already removed by Vue
-        if (!err.message?.includes("removeChild")) {
+        // Ignore known harmless warnings
+        const msg = err.message || "";
+        const ignoredErrors = ["removeChild", "transition", "AbortError"];
+        if (!ignoredErrors.some((e) => msg.includes(e))) {
           console.warn("Scanner stop warning:", err);
         }
       }
