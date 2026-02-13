@@ -112,7 +112,7 @@ const handleMoreItem = (item) => {
           animationsEnabled ? 'group-hover:animate-wiggle' : '',
         ]"
       >
-        <i class="fa-solid fa-shield-halved text-white text-lg"></i>
+        <Icon name="fa-shield-halved" class="text-white text-lg" />
       </div>
       <div>
         <h1 class="text-lg font-bold text-white">PRISM</h1>
@@ -123,7 +123,7 @@ const handleMoreItem = (item) => {
     <nav
       role="tablist"
       aria-label="App sections"
-      class="flex items-center gap-1 bg-white/10 backdrop-blur rounded-xl p-1"
+      class="flex items-center gap-1 bg-white/10 backdrop-blur rounded-xl p-1 overflow-x-auto scrollbar-hide"
     >
       <button
         v-for="tab in allTabs"
@@ -133,23 +133,23 @@ const handleMoreItem = (item) => {
         :aria-label="tab.label"
         @click="switchTab(tab.id)"
         :class="[
-          'px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer flex items-center gap-2 btn-press',
+          'px-3 lg:px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer flex items-center gap-2 btn-press whitespace-nowrap',
           animationsEnabled ? 'transition-all duration-200' : '',
           store.currentTab === tab.id
             ? 'bg-white text-gray-800 shadow-lg'
             : 'text-white/80 hover:text-white hover:bg-white/10',
         ]"
       >
-        <i
+        <Icon
+          :name="tab.icon"
           :class="[
-            'fa-solid text-base',
-            tab.icon,
             store.currentTab === tab.id && animationsEnabled
               ? 'animate-bounce-in'
               : '',
           ]"
-        ></i>
-        <span>{{ tab.label }}</span>
+          class="text-base"
+        />
+        <span class="hidden lg:inline">{{ tab.label }}</span>
       </button>
     </nav>
 
@@ -161,7 +161,7 @@ const handleMoreItem = (item) => {
         animationsEnabled ? 'transition-all duration-200 hover:scale-105' : '',
       ]"
     >
-      <i class="fa-solid fa-circle-question text-lg"></i>
+      <Icon name="fa-circle-question" class="text-lg" />
       <span class="text-sm">Help</span>
     </button>
   </header>
@@ -224,13 +224,12 @@ const handleMoreItem = (item) => {
               isDark ? 'bg-gray-700' : 'bg-gray-100',
             ]"
           >
-            <i
+            <Icon
+              :name="item.icon"
               :class="[
-                'fa-solid',
-                item.icon,
                 isDark ? 'text-gray-300' : 'text-gray-600',
               ]"
-            ></i>
+            />
           </div>
           <span
             class="text-sm font-medium"
@@ -263,15 +262,15 @@ const handleMoreItem = (item) => {
             : 'text-gray-500',
         ]"
       >
-        <i
+        <Icon
+          :name="tab.icon"
           :class="[
-            'fa-solid text-lg',
-            tab.icon,
             store.currentTab === tab.id && animationsEnabled
               ? 'animate-bounce-in'
               : '',
           ]"
-        ></i>
+          class="text-lg"
+        />
         <span class="text-[11px] font-medium">{{ tab.label }}</span>
       </button>
 
@@ -292,14 +291,14 @@ const handleMoreItem = (item) => {
             : 'text-gray-400',
         ]"
       >
-        <i
+        <Icon
+          :name="showMore ? 'fa-xmark' : 'fa-ellipsis'"
           :class="[
-            'fa-solid text-xl',
-            showMore ? 'fa-xmark' : 'fa-ellipsis',
             animationsEnabled ? 'transition-transform duration-200' : '',
             showMore ? 'rotate-90' : '',
           ]"
-        ></i>
+          class="text-xl"
+        />
         <span class="text-[10px] font-medium">More</span>
       </button>
     </div>

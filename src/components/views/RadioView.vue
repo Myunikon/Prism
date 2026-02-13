@@ -109,7 +109,7 @@ onUnmounted(() => {
       ]"
     >
       <div class="absolute top-0 right-0 p-4 opacity-10">
-        <i class="fa-solid fa-tower-broadcast text-6xl"></i>
+        <Icon name="fa-tower-broadcast" class="text-6xl" />
       </div>
       <h2
         class="text-xl font-bold mb-1 z-10 relative"
@@ -132,7 +132,7 @@ onUnmounted(() => {
           class="font-bold text-sm uppercase tracking-wider flex items-center gap-2"
           :class="isDark ? 'text-blue-400' : 'text-blue-600'"
         >
-          <i class="fa-brands fa-bluetooth-b text-lg"></i> BLE Radar
+          <Icon name="fa-bluetooth-b" class="text-lg" /> BLE Radar
         </h3>
         <button
           @click="startBLEScan"
@@ -146,10 +146,10 @@ onUnmounted(() => {
               : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg hover:shadow-blue-500/25 active:scale-95',
           ]"
         >
-          <i
-            class="fa-solid"
-            :class="isScanningBLE ? 'fa-spinner animate-spin' : 'fa-radar'"
-          ></i>
+          <Icon
+            :name="isScanningBLE ? 'fa-spinner' : 'fa-radar'"
+            :class="isScanningBLE ? 'animate-spin' : ''"
+          />
           {{ isScanningBLE ? "Scanning..." : "Scan Area" }}
         </button>
       </div>
@@ -189,7 +189,7 @@ onUnmounted(() => {
         v-if="bleError"
         class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs"
       >
-        <i class="fa-solid fa-triangle-exclamation mr-2"></i>{{ bleError }}
+        <Icon name="fa-triangle-exclamation" class="mr-2" />{{ bleError }}
       </div>
 
       <div v-else-if="bleDevices.length > 0" class="grid gap-2">
@@ -206,7 +206,7 @@ onUnmounted(() => {
             <div
               class="w-8 h-8 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center"
             >
-              <i class="fa-brands fa-bluetooth"></i>
+              <Icon name="fa-bluetooth" />
             </div>
             <div>
               <h4
@@ -249,7 +249,7 @@ onUnmounted(() => {
         class="font-bold text-sm uppercase tracking-wider flex items-center gap-2"
         :class="isDark ? 'text-purple-400' : 'text-purple-600'"
       >
-        <i class="fa-solid fa-wifi text-lg"></i> Network Signal (Active)
+        <Icon name="fa-wifi" class="text-lg" /> Network Signal (Active)
       </h3>
 
       <div

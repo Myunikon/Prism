@@ -29,7 +29,7 @@ defineProps({
         class="text-xs font-bold uppercase tracking-wide mb-2 block"
         :class="isDark ? 'text-gray-400' : 'text-gray-500'"
       >
-        <i class="fa-solid fa-hashtag mr-1"></i>{{ t.hexDump }}
+        <Icon name="fa-hashtag" class="mr-1" />{{ t.hexDump }}
       </label>
       <pre
         :class="[

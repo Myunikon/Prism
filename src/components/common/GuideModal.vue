@@ -33,7 +33,7 @@ const t = computed(() => guideContent[lang.value] || guideContent.en);
             <div
               class="w-12 h-12 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 rounded-xl flex items-center justify-center shadow-lg"
             >
-              <i class="fa-solid fa-book-open text-white text-xl"></i>
+              <Icon name="fa-book-open" class="text-white text-xl" />
             </div>
             <div>
               <h2
@@ -59,7 +59,7 @@ const t = computed(() => guideContent[lang.value] || guideContent.en);
                 : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100',
             ]"
           >
-            <i class="fa-solid fa-xmark text-lg"></i>
+            <Icon name="fa-xmark" class="text-lg" />
           </button>
         </div>
 
@@ -78,7 +78,7 @@ const t = computed(() => guideContent[lang.value] || guideContent.en);
               class="text-sm font-bold mb-2 flex items-center gap-2"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
-              <i :class="['fa-solid', section.icon, section.iconColor]"></i>
+              <Icon :name="section.icon" :class="[section.iconColor]" />
               {{ section.title }}
             </h3>
             <p
@@ -94,7 +94,7 @@ const t = computed(() => guideContent[lang.value] || guideContent.en);
                 class="text-sm flex items-start gap-2"
                 :class="isDark ? 'text-gray-400' : 'text-gray-500'"
               >
-                <i class="fa-solid fa-check text-green-500 mt-1 text-xs"></i>
+                <Icon name="fa-check" class="text-green-500 mt-1 text-xs" />
                 <span>{{ bullet }}</span>
               </li>
             </ul>
@@ -106,7 +106,7 @@ const t = computed(() => guideContent[lang.value] || guideContent.en);
               class="text-sm font-bold mb-3 flex items-center gap-2"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
-              <i class="fa-solid fa-gauge text-cyan-500"></i>
+              <Icon name="fa-gauge" class="text-cyan-500" />
               {{ t.threatLevels.title }}
             </h3>
             <div class="grid grid-cols-3 gap-2">
@@ -124,7 +124,7 @@ const t = computed(() => guideContent[lang.value] || guideContent.en);
                     `from-${level.color}-500 to-${level.color}-600`,
                   ]"
                 >
-                  <i :class="['fa-solid text-white', level.icon]"></i>
+                  <Icon :name="level.icon" class="text-white" />
                 </div>
                 <p :class="['text-xs font-bold', `text-${level.color}-600`]">
                   {{ level.name }}
@@ -145,7 +145,7 @@ const t = computed(() => guideContent[lang.value] || guideContent.en);
               class="text-sm font-bold mb-3 flex items-center gap-2"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
-              <i class="fa-solid fa-code text-purple-500"></i>
+              <Icon name="fa-code" class="text-purple-500" />
               {{ t.protocols.title }}
             </h3>
             <div class="flex flex-wrap gap-2">

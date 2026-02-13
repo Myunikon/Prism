@@ -43,7 +43,7 @@ const fontSizes = computed(() => [
         <div
           class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-500/20"
         >
-          <i class="fa-solid fa-palette text-purple-500"></i>
+          <Icon name="fa-palette" class="text-purple-500" />
         </div>
         <span
           class="font-semibold"
@@ -52,13 +52,14 @@ const fontSizes = computed(() => [
           {{ t.appearance }}
         </span>
       </div>
-      <i
+      <Icon
+        name="fa-chevron-down"
+        class="transition-transform duration-300"
         :class="[
-          'fa-solid fa-chevron-down transition-transform duration-300',
           openSection === 'appearance' ? 'rotate-180' : '',
           isDark ? 'text-gray-500' : 'text-gray-400',
         ]"
-      ></i>
+      />
     </button>
 
     <!-- Section Content -->
@@ -79,10 +80,10 @@ const fontSizes = computed(() => [
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i
-                class="fa-solid fa-moon"
+              <Icon
+                name="fa-moon"
                 :class="isDark ? 'text-yellow-400' : 'text-gray-500'"
-              ></i>
+              />
             </div>
             <div>
               <p
@@ -127,7 +128,7 @@ const fontSizes = computed(() => [
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i class="fa-solid fa-globe text-blue-500"></i>
+              <Icon name="fa-globe" class="text-blue-500" />
             </div>
             <p
               class="text-sm font-medium"
@@ -160,7 +161,7 @@ const fontSizes = computed(() => [
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i class="fa-solid fa-text-height text-green-500"></i>
+              <Icon name="fa-text-height" class="text-green-500" />
             </div>
             <p
               class="text-sm font-medium"
@@ -201,12 +202,11 @@ const fontSizes = computed(() => [
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i
-                :class="[
-                  'fa-solid fa-wand-magic-sparkles text-pink-500',
-                  animationsEnabled ? 'animate-pulse' : '',
-                ]"
-              ></i>
+              <Icon
+                name="fa-wand-magic-sparkles"
+                class="text-pink-500"
+                :class="animationsEnabled ? 'animate-pulse' : ''"
+              />
             </div>
             <div>
               <p

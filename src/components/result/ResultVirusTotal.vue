@@ -27,7 +27,7 @@ const emit = defineEmits(["startScan"]);
           isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700',
         ]"
       >
-        <i class="fa-solid fa-circle-exclamation mr-2"></i>{{ t.error }}:
+        <Icon name="fa-circle-exclamation" class="mr-2" />{{ t.error }}:
         {{ vtResult.error }}
       </div>
       <div v-else class="grid grid-cols-2 gap-4">
@@ -60,7 +60,7 @@ const emit = defineEmits(["startScan"]);
       @click="$emit('startScan')"
       class="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-bold rounded-xl hover:shadow-lg transition-all cursor-pointer"
     >
-      <i class="fa-solid fa-rocket mr-2"></i>{{ t.startScan }}
+      <Icon name="fa-rocket" class="mr-2" />{{ t.startScan }}
     </button>
   </div>
 </template>

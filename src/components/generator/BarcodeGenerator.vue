@@ -287,7 +287,7 @@ defineExpose({ setPayload });
           <div
             class="w-9 h-9 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center"
           >
-            <i class="fa-solid fa-barcode text-white text-sm"></i>
+            <Icon name="fa-barcode" class="text-white text-sm" />
           </div>
           <div>
             <h3
@@ -407,7 +407,7 @@ defineExpose({ setPayload });
           v-if="barcodeError"
           class="p-2 rounded-lg bg-red-500/10 text-red-500 text-xs mt-2"
         >
-          <i class="fa-solid fa-exclamation-circle mr-1"></i>{{ barcodeError }}
+          <Icon name="fa-exclamation-circle" class="mr-1" />{{ barcodeError }}
         </div>
       </div>
     </div>
@@ -462,7 +462,7 @@ defineExpose({ setPayload });
                 : 'bg-gray-100 text-gray-600',
             ]"
           >
-            <i class="fa-solid fa-redo text-xs"></i>
+            <Icon name="fa-redo" class="text-xs" />
           </button>
         </div>
         <div class="mt-3">

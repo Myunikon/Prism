@@ -272,7 +272,7 @@ const t = computed(
           v-if="isScanning && !errorMsg"
           class="absolute inset-0 pointer-events-none flex items-center justify-center"
         >
-          <div class="w-64 h-64 md:w-72 md:h-72 relative">
+          <div class="w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 relative">
             <!-- Corner brackets -->
             <div
               class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-lg"
@@ -309,16 +309,17 @@ const t = computed(
                 {{ cam.label || `Camera ${cam.id.substr(0, 5)}` }}
               </option>
             </select>
-            <i
-              class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-white/70 text-xs pointer-events-none"
-            ></i>
+            <Icon
+              name="fa-chevron-down"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 text-xs pointer-events-none"
+            />
           </div>
 
           <button
             @click="flipCamera"
             class="w-11 h-11 rounded-full bg-black/50 backdrop-blur flex items-center justify-center cursor-pointer hover:bg-black/70 transition-colors border border-white/20"
           >
-            <i class="fa-solid fa-camera-rotate text-white"></i>
+            <Icon name="fa-camera-rotate" class="text-white" />
           </button>
         </div>
 
@@ -328,12 +329,10 @@ const t = computed(
           class="absolute bottom-4 left-4 px-3 py-1.5 bg-black/50 backdrop-blur rounded-full z-10"
         >
           <span class="text-xs font-medium text-white">
-            <i
-              :class="[
-                'fa-solid mr-1',
-                facingMode === 'environment' ? 'fa-mobile-screen' : 'fa-user',
-              ]"
-            ></i>
+            <Icon
+              :name="facingMode === 'environment' ? 'fa-mobile-screen' : 'fa-user'"
+              class="mr-1"
+            />
             {{ facingMode === "environment" ? t.back : t.front }}
           </span>
         </div>
@@ -347,7 +346,7 @@ const t = computed(
           <div
             class="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center mb-4 shadow-lg"
           >
-            <i class="fa-solid fa-camera-slash text-white text-3xl"></i>
+            <Icon name="fa-camera-slash" class="text-white text-3xl" />
           </div>
           <p
             class="font-semibold mb-4"
@@ -359,7 +358,7 @@ const t = computed(
             @click="startScanner"
             class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer"
           >
-            <i class="fa-solid fa-rotate-right mr-2"></i>{{ t.tryAgain }}
+            <Icon name="fa-rotate-right" class="mr-2" />{{ t.tryAgain }}
           </button>
         </div>
 
@@ -381,7 +380,7 @@ const t = computed(
           class="text-sm font-medium"
           :class="isDark ? 'text-gray-400' : 'text-gray-600'"
         >
-          <i class="fa-solid fa-qrcode mr-2 text-purple-500"></i>
+          <Icon name="fa-qrcode" class="mr-2 text-purple-500" />
           {{ t.instruction }}
         </p>
       </div>
@@ -399,7 +398,7 @@ const t = computed(
           <div
             class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md"
           >
-            <i class="fa-solid fa-check text-white text-xl"></i>
+            <Icon name="fa-check" class="text-white text-xl" />
           </div>
           <div>
             <h2
@@ -424,13 +423,13 @@ const t = computed(
             :class="isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : ''"
             :title="t.fullAnalysis"
           >
-            <i class="fa-solid fa-microscope"></i>
+            <Icon name="fa-microscope" />
           </button>
           <button
             @click="resetScan"
             class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer"
           >
-            <i class="fa-solid fa-camera mr-2"></i>{{ t.scanAgain }}
+            <Icon name="fa-camera" class="mr-2" />{{ t.scanAgain }}
           </button>
         </div>
       </div>

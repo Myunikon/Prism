@@ -17,13 +17,13 @@ const animationsEnabled = computed(() => store.config.animations !== false);
 const iconClass = computed(() => {
   switch (props.type) {
     case "error":
-      return "fa-solid fa-circle-xmark text-red-500";
+      return "fa-circle-xmark";
     case "warning":
-      return "fa-solid fa-exclamation-triangle text-amber-500";
+      return "fa-exclamation-triangle";
     case "info":
-      return "fa-solid fa-info-circle text-blue-500";
+      return "fa-info-circle";
     default:
-      return "fa-solid fa-circle-check text-green-500";
+      return "fa-circle-check";
   }
 });
 
@@ -90,7 +90,7 @@ onUnmounted(() => {
             bgClass,
           ]"
         >
-          <i :class="[iconClass, 'text-lg flex-shrink-0']"></i>
+          <Icon :name="iconClass" class="text-lg flex-shrink-0" :class="[type === 'error' ? 'text-red-500' : type === 'warning' ? 'text-amber-500' : type === 'info' ? 'text-blue-500' : 'text-green-500']" />
           <p
             class="flex-1 text-sm font-medium"
             :class="isDark ? 'text-white' : 'text-gray-800'"
@@ -102,7 +102,7 @@ onUnmounted(() => {
             class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer hover:bg-black/10"
             :class="isDark ? 'text-gray-300' : 'text-gray-500'"
           >
-            <i class="fa-solid fa-xmark"></i>
+            <Icon name="fa-xmark" />
           </button>
         </div>
       </div>

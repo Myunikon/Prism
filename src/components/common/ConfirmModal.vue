@@ -19,11 +19,11 @@ const animationsEnabled = computed(() => store.config.animations !== false);
 const iconClass = computed(() => {
   switch (props.type) {
     case "danger":
-      return "fa-solid fa-trash text-red-500";
+      return "fa-trash";
     case "info":
-      return "fa-solid fa-info-circle text-blue-500";
+      return "fa-info-circle";
     default:
-      return "fa-solid fa-exclamation-triangle text-amber-500";
+      return "fa-exclamation-triangle";
   }
 });
 
@@ -130,7 +130,7 @@ watch(
                   iconBg,
                 ]"
               >
-                <i :class="[iconClass, 'text-2xl']"></i>
+                <Icon :name="iconClass" class="text-2xl" :class="[type === 'danger' ? 'text-red-500' : type === 'info' ? 'text-blue-500' : 'text-amber-500']" />
               </div>
             </div>
 

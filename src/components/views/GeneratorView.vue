@@ -61,7 +61,7 @@ const t = computed(() => strings[store.config.language] || strings.en);
             : 'text-gray-500 hover:text-gray-700',
         ]"
       >
-        <i class="fa-solid fa-qrcode"></i>{{ t.qrCode }}
+        <Icon name="fa-qrcode" />{{ t.qrCode }}
       </button>
       <button
         @click="generatorType = 'barcode'"
@@ -74,7 +74,7 @@ const t = computed(() => strings[store.config.language] || strings.en);
             : 'text-gray-500 hover:text-gray-700',
         ]"
       >
-        <i class="fa-solid fa-barcode"></i>{{ t.barcode }}
+        <Icon name="fa-barcode" />{{ t.barcode }}
       </button>
     </div>
 

@@ -143,7 +143,7 @@ const getTypeColor = (type) => {
               : 'text-gray-600 hover:text-gray-800',
           ]"
         >
-          <i class="fa-solid fa-arrow-left"></i>{{ t.backTo }}
+          <Icon name="fa-arrow-left" />{{ t.backTo }}
         </button>
         <div class="flex items-center gap-3">
           <span
@@ -152,7 +152,7 @@ const getTypeColor = (type) => {
               getTypeColor(selectedLog.type),
             ]"
           >
-            <i :class="['fa-solid', getTypeIcon(selectedLog.type)]"></i>
+            <Icon :name="getTypeIcon(selectedLog.type)" />
             {{ selectedLog.type }}
           </span>
           <span
@@ -179,7 +179,7 @@ const getTypeColor = (type) => {
           class="flex items-center gap-2 text-sm"
           :class="isDark ? 'text-gray-300' : 'text-gray-600'"
         >
-          <i class="fa-solid fa-file text-purple-500"></i>
+          <Icon name="fa-file" class="text-purple-500" />
           <span class="font-medium">{{
             selectedLog.metadata.fileName || "Unknown file"
           }}</span>
@@ -209,7 +209,7 @@ const getTypeColor = (type) => {
           <div
             class="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg"
           >
-            <i class="fa-solid fa-clock-rotate-left text-white text-xl"></i>
+            <Icon name="fa-clock-rotate-left" class="text-white text-xl" />
           </div>
           <div>
             <h2
@@ -273,12 +273,10 @@ const getTypeColor = (type) => {
               isExporting ? 'opacity-50 cursor-not-allowed' : '',
             ]"
           >
-            <i
-              class="fa-solid"
-              :class="
-                isExporting ? 'fa-spinner animate-spin' : 'fa-file-export'
-              "
-            ></i>
+            <Icon
+              :name="isExporting ? 'fa-spinner' : 'fa-file-export'"
+              :class="isExporting ? 'animate-spin' : ''"
+            />
             {{ isExporting ? t.exporting : t.export }}
           </button>
           <button
@@ -291,7 +289,7 @@ const getTypeColor = (type) => {
               'px-3 py-1.5 text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 rounded-lg transition-colors flex items-center gap-2',
             ]"
           >
-            <i class="fa-solid fa-trash-can"></i>{{ t.clear }}
+            <Icon name="fa-trash-can" />{{ t.clear }}
           </button>
         </div>
       </div>
@@ -306,10 +304,11 @@ const getTypeColor = (type) => {
             class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4"
             :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
           >
-            <i
-              class="fa-solid fa-inbox text-4xl"
+            <Icon
+              name="fa-inbox"
+              class="text-4xl"
               :class="isDark ? 'text-gray-500' : 'text-gray-300'"
-            ></i>
+            />
           </div>
           <p
             class="font-medium"
@@ -347,7 +346,7 @@ const getTypeColor = (type) => {
                 getTypeColor(log.type),
               ]"
             >
-              <i :class="['fa-solid', getTypeIcon(log.type)]"></i>
+              <Icon :name="getTypeIcon(log.type)" />
               {{ log.type }}
             </span>
             <span
@@ -363,7 +362,7 @@ const getTypeColor = (type) => {
             class="text-xs mb-1 flex items-center gap-1"
             :class="isDark ? 'text-gray-500' : 'text-gray-400'"
           >
-            <i class="fa-solid fa-file"></i>{{ log.metadata.fileName }}
+            <Icon name="fa-file" />{{ log.metadata.fileName }}
           </p>
 
           <p
@@ -385,7 +384,7 @@ const getTypeColor = (type) => {
                   : '',
               ]"
             >
-              <i class="fa-solid fa-arrow-right mr-1"></i>{{ t.viewFull }}
+              <Icon name="fa-arrow-right" class="mr-1" />{{ t.viewFull }}
             </span>
             <button
               @click.stop="copyToClipboard(log.value || log.data)"
@@ -397,7 +396,7 @@ const getTypeColor = (type) => {
                   : 'text-gray-500 hover:bg-gray-100',
               ]"
             >
-              <i class="fa-regular fa-copy mr-1"></i>{{ t.copy }}
+              <Icon name="fa-copy" class="mr-1" />{{ t.copy }}
             </button>
           </div>
         </button>
@@ -414,10 +413,11 @@ const getTypeColor = (type) => {
             class="w-20 h-20 rounded-2xl flex items-center justify-center mb-4"
             :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
           >
-            <i
-              class="fa-solid fa-briefcase text-4xl"
+            <Icon
+              name="fa-briefcase"
+              class="text-4xl"
               :class="isDark ? 'text-gray-500' : 'text-gray-300'"
-            ></i>
+            />
           </div>
           <p
             class="font-medium"
@@ -459,7 +459,7 @@ const getTypeColor = (type) => {
             @click.stop="deleteCaseItem(item.id)"
             class="absolute top-4 right-4 text-gray-400 hover:text-red-500 p-1 z-10"
           >
-            <i class="fa-solid fa-xmark"></i>
+            <Icon name="fa-xmark" />
           </div>
 
           <div class="flex justify-between items-start mb-2 pr-6">
@@ -469,7 +469,7 @@ const getTypeColor = (type) => {
                 getTypeColor(item.type),
               ]"
             >
-              <i :class="['fa-solid', getTypeIcon(item.type)]"></i
+              <Icon :name="getTypeIcon(item.type)" />
               >{{ item.type }}
             </span>
             <span
@@ -483,7 +483,7 @@ const getTypeColor = (type) => {
             class="text-xs mb-1 flex items-center gap-1"
             :class="isDark ? 'text-gray-500' : 'text-gray-400'"
           >
-            <i class="fa-solid fa-file"></i>{{ item.metadata.fileName }}
+            <Icon name="fa-file" />{{ item.metadata.fileName }}
           </p>
           <p
             class="text-sm font-mono break-all line-clamp-2"

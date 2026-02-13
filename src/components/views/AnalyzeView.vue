@@ -10,9 +10,8 @@ import { extractImageMeta } from "../../utils/imageMeta.js";
 import { Html5Qrcode } from "html5-qrcode";
 import ExifDataPanel from "../analyze/ExifDataPanel.vue";
 import AnalyzeUpload from "../analyze/AnalyzeUpload.vue";
-import Tesseract from "tesseract.js";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+// Tesseract and Leaflet are loaded dynamically when needed
+let L = null;
 import { analyzeStrings } from "../../i18n/analyze.js";
 
 const isDark = computed(() => store.config.darkMode);
@@ -194,8 +193,10 @@ const runOCR = async () => {
     // Stage 2: Recognize with multiple languages just in case
     // Using 'eng+ind' if possible or just 'eng' then 'ind'
     // For now we stick to 'eng' but pre-processing changes everything.
+    // Dynamically load tesseract.js only when OCR is requested
+    const Tesseract = (await import("tesseract.js")).default;
     const result = await Tesseract.recognize(processedImage, "eng", {
-      logger: (m) => console.log(m), // Optional logging
+      logger: (m) => console.log(m),
     });
 
     ocrText.value = result.data.text.trim();
@@ -211,7 +212,7 @@ const runOCR = async () => {
   }
 };
 
-const initMap = () => {
+const initMap = async () => {
   if (!exifData.value || !exifData.value.gps || !mapContainer.value) return;
 
   const lat = parseFloat(exifData.value.gps.lat);
@@ -219,6 +220,13 @@ const initMap = () => {
 
   if (lat && lon) {
     if (mapInstance) mapInstance.remove();
+
+    // Dynamically load Leaflet only when map is needed
+    if (!L) {
+      await import("leaflet/dist/leaflet.css");
+      L = (await import("leaflet")).default;
+    }
+
     mapInstance = L.map(mapContainer.value).setView([lat, lon], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
@@ -246,21 +254,6 @@ watch(
   { immediate: true }
 );
 
-// Watch for passed image from Scanner
-watch(
-  () => store.previewImage,
-  async (newVal) => {
-    if (newVal && !fileData.value) {
-      // Convert base64 to File object
-      const res = await fetch(newVal);
-      const blob = await res.blob();
-      const file = new File([blob], "captured_scan.png", { type: "image/png" });
-      store.setPreviewImage(null); // Clear it
-      await processFile(file);
-    }
-  },
-  { immediate: true }
-);
 
 // Watch for exif data to init map
 watch(exifData, async (newVal) => {
@@ -311,7 +304,7 @@ const t = computed(
           <div
             class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md flex-shrink-0"
           >
-            <i class="fa-solid fa-file text-white text-lg"></i>
+            <Icon name="fa-file" class="text-white text-lg" />
           </div>
           <div class="min-w-0 flex-1">
             <h4
@@ -338,7 +331,7 @@ const t = computed(
               : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
           "
         >
-          <i class="fa-solid fa-xmark text-lg"></i>
+          <Icon name="fa-xmark" class="text-lg" />
         </button>
       </div>
 
@@ -356,12 +349,12 @@ const t = computed(
           class="text-sm font-bold mb-4 flex items-center gap-2"
           :class="isDark ? 'text-white' : 'text-gray-800'"
         >
-          <i class="fa-solid fa-microscope text-purple-500"></i>
+          <Icon name="fa-microscope" class="text-purple-500" />
           {{ t.imageForensics }}
         </h3>
 
         <!-- Image Preview and ELA -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <p
               class="text-xs font-medium mb-2"
@@ -372,7 +365,7 @@ const t = computed(
             <img
               :src="previewUrl"
               :class="[
-                'w-full h-40 object-contain rounded-xl border',
+                'w-full h-32 sm:h-40 md:h-48 object-contain rounded-xl border',
                 isDark
                   ? 'bg-gray-900 border-gray-600'
                   : 'bg-gray-100 border-gray-200',
@@ -386,19 +379,19 @@ const t = computed(
             <img
               v-if="elaUrl"
               :src="elaUrl"
-              class="w-full h-40 object-contain bg-gray-900 rounded-xl cursor-pointer hover:scale-105 transition-transform"
+              class="w-full h-32 sm:h-40 md:h-48 object-contain bg-gray-900 rounded-xl cursor-pointer hover:scale-105 transition-transform"
               @click="store.setPreviewImage(elaUrl)"
             />
             <div
               v-else
               :class="[
-                'w-full h-40 flex items-center justify-center rounded-xl text-sm',
+                'w-full h-32 sm:h-40 md:h-48 flex items-center justify-center rounded-xl text-sm',
                 isDark
                   ? 'bg-gray-700 text-gray-400'
                   : 'bg-gray-100 text-gray-400',
               ]"
             >
-              <i class="fa-solid fa-spinner animate-spin mr-2"></i>
+              <Icon name="fa-spinner" class="animate-spin mr-2" />
               {{ t.processing }}
             </div>
           </div>
@@ -410,17 +403,17 @@ const t = computed(
             @click="runLSB"
             class="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all"
           >
-            <i class="fa-solid fa-layer-group mr-2"></i>{{ t.stegoCheck }}
+            <Icon name="fa-layer-group" class="mr-2" />{{ t.stegoCheck }}
           </button>
           <button
             @click="runOCR"
             :disabled="isOcrLoading"
             class="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all"
           >
-            <i
-              class="fa-solid"
-              :class="isOcrLoading ? 'fa-spinner animate-spin' : 'fa-font'"
-            ></i>
+            <Icon
+              :name="isOcrLoading ? 'fa-spinner' : 'fa-font'"
+              :class="isOcrLoading ? 'animate-spin' : ''"
+            />
             {{ t.extractText }}
           </button>
         </div>
@@ -436,7 +429,7 @@ const t = computed(
             </p>
             <img
               :src="lsbUrl"
-              class="w-full h-40 object-contain bg-black rounded-xl border border-indigo-500/30"
+              class="w-full h-32 sm:h-40 md:h-48 object-contain bg-black rounded-xl border border-indigo-500/30"
             />
           </div>
           <div v-if="ocrText" class="relative">
@@ -445,14 +438,14 @@ const t = computed(
             </p>
             <textarea
               readonly
-              class="w-full h-40 bg-gray-900 text-white text-xs p-3 rounded-xl font-mono resize-none border border-emerald-500/30"
+              class="w-full h-32 sm:h-40 md:h-48 bg-gray-900 text-white text-xs p-3 rounded-xl font-mono resize-none border border-emerald-500/30"
               >{{ ocrText }}</textarea
             >
             <button
               @click="navigator.clipboard.writeText(ocrText)"
               class="absolute top-8 right-2 p-1.5 bg-black/50 hover:bg-black/80 text-white rounded text-xs"
             >
-              <i class="fa-regular fa-copy"></i>
+              <Icon name="fa-copy" />
             </button>
           </div>
         </div>
@@ -460,7 +453,7 @@ const t = computed(
         <!-- GPS Map -->
         <div v-if="exifData?.gps" class="mb-4">
           <p class="text-xs font-bold mb-2 text-orange-400">
-            <i class="fa-solid fa-map-location-dot mr-2"></i>{{ t.gpsLocation }}
+            <Icon name="fa-map-location-dot" class="mr-2" />{{ t.gpsLocation }}
           </p>
           <div
             ref="mapContainer"
@@ -481,7 +474,7 @@ const t = computed(
             class="text-xs font-bold uppercase tracking-wide mb-3 flex items-center gap-2"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            <i class="fa-solid fa-image text-blue-500"></i>{{ t.imageInfo }}
+            <Icon name="fa-image" class="text-blue-500" />{{ t.imageInfo }}
           </h4>
           <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
             <div
@@ -617,7 +610,7 @@ const t = computed(
             class="text-xs font-medium mb-1 flex items-center gap-1"
             :class="isDark ? 'text-gray-400' : 'text-gray-500'"
           >
-            <i class="fa-solid fa-fingerprint text-cyan-500"></i>{{ t.shaHash }}
+            <Icon name="fa-fingerprint" class="text-cyan-500" />{{ t.shaHash }}
           </p>
           <p
             class="text-xs font-mono break-all select-all"
@@ -640,14 +633,15 @@ const t = computed(
               : 'bg-gray-100',
           ]"
         >
-          <i
+          <Icon
+            :name="fileData && fileData !== 'FORENSIC_ONLY' ? 'fa-check-circle' : 'fa-qrcode'"
             :class="[
-              'fa-solid text-xl',
+              'text-xl',
               fileData && fileData !== 'FORENSIC_ONLY'
-                ? 'fa-check-circle text-green-500'
-                : 'fa-qrcode text-gray-400',
+                ? 'text-green-500'
+                : 'text-gray-400',
             ]"
-          ></i>
+          />
           <div>
             <p
               class="text-sm font-medium"

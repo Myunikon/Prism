@@ -34,7 +34,7 @@ const updateConfig = (key, value) => {
         <div
           class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-500/20"
         >
-          <i class="fa-solid fa-camera text-blue-500"></i>
+          <Icon name="fa-camera" class="text-blue-500" />
         </div>
         <span
           class="font-semibold"
@@ -43,13 +43,14 @@ const updateConfig = (key, value) => {
           {{ t.scanner }}
         </span>
       </div>
-      <i
+      <Icon
+        name="fa-chevron-down"
+        class="transition-transform duration-300"
         :class="[
-          'fa-solid fa-chevron-down transition-transform duration-300',
           openSection === 'scanner' ? 'rotate-180' : '',
           isDark ? 'text-gray-500' : 'text-gray-400',
         ]"
-      ></i>
+      />
     </button>
 
     <div
@@ -69,7 +70,7 @@ const updateConfig = (key, value) => {
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i class="fa-solid fa-bolt text-yellow-500"></i>
+              <Icon name="fa-bolt" class="text-yellow-500" />
             </div>
             <div>
               <p
@@ -113,7 +114,7 @@ const updateConfig = (key, value) => {
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i class="fa-solid fa-mobile-screen-button text-orange-500"></i>
+              <Icon name="fa-mobile-screen-button" class="text-orange-500" />
             </div>
             <div>
               <p

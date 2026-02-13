@@ -1,7 +1,11 @@
-import MD5 from 'crypto-js/md5';
-import SHA1 from 'crypto-js/sha1';
-import SHA256 from 'crypto-js/sha256';
-import HmacSHA256 from 'crypto-js/hmac-sha256';
+// Web Crypto API helpers (replaces crypto-js — 0KB, hardware-accelerated)
+async function webCryptoHash(algorithm, input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    const hashBuffer = await crypto.subtle.digest(algorithm, data);
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 // Import new modular utilities
 import { xorBruteForce, caesarBruteForce } from '../utils/cipher.js';
@@ -120,16 +124,26 @@ export function useTools() {
         defang_url: (input) => defangUrl(input),
         refang_url: (input) => refangUrl(input),
 
-        // Hashes
-        hash_md5: (input) => MD5(input).toString(),
-        hash_sha1: (input) => SHA1(input).toString(),
-        hash_sha256: (input) => SHA256(input).toString(),
-        hmac_sha256: (input) => {
+        // Hashes (Web Crypto API — native, hardware-accelerated)
+        hash_md5: async (input) => {
+            // Web Crypto doesn't support MD5 — dynamic import fallback
+            const { default: MD5 } = await import('crypto-js/md5');
+            return MD5(input).toString();
+        },
+        hash_sha1: async (input) => await webCryptoHash('SHA-1', input),
+        hash_sha256: async (input) => await webCryptoHash('SHA-256', input),
+        hmac_sha256: async (input) => {
             const lines = input.split('\n');
             if (lines.length < 2) return "Usage:\nLine 1: Secret Key\nLine 2+: Message to hash";
             const key = lines[0];
             const msg = lines.slice(1).join('\n');
-            return HmacSHA256(msg, key).toString();
+            const encoder = new TextEncoder();
+            const keyData = await crypto.subtle.importKey(
+                'raw', encoder.encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+            );
+            const signature = await crypto.subtle.sign('HMAC', keyData, encoder.encode(msg));
+            return Array.from(new Uint8Array(signature))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
         },
 
         // Extractors

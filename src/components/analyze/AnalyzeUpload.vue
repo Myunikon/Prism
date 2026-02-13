@@ -34,7 +34,7 @@ const onFileSelect = (e) => emit("file-select", e);
       <div
         class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-xl"
       >
-        <i class="fa-solid fa-cloud-arrow-up text-3xl text-white"></i>
+        <Icon name="fa-cloud-arrow-up" class="text-3xl text-white" />
       </div>
       <h3
         class="text-xl font-bold mb-2"
@@ -51,7 +51,7 @@ const onFileSelect = (e) => emit("file-select", e);
       <label
         class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-sm font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all cursor-pointer"
       >
-        <i class="fa-solid fa-folder-open"></i>
+        <Icon name="fa-folder-open" />
         {{ t.browseFiles }}
         <input
           type="file"
@@ -65,15 +65,15 @@ const onFileSelect = (e) => emit("file-select", e);
         :class="isDark ? 'text-gray-500' : 'text-gray-400'"
       >
         <span>
-          <i class="fa-solid fa-image mr-1 text-purple-500"></i>
+          <Icon name="fa-image" class="mr-1 text-purple-500" />
           {{ t.images }}
         </span>
         <span>
-          <i class="fa-solid fa-qrcode mr-1 text-blue-500"></i>
+          <Icon name="fa-qrcode" class="mr-1 text-blue-500" />
           {{ t.qrCodes }}
         </span>
         <span>
-          <i class="fa-solid fa-file-code mr-1 text-green-500"></i>
+          <Icon name="fa-file-code" class="mr-1 text-green-500" />
           JSON/XML
         </span>
       </div>

@@ -1,7 +1,9 @@
 import { createApp } from 'vue'
 import './style.css'
-// Import FontAwesome CSS locally (bundled via npm)
-import '@fortawesome/fontawesome-free/css/all.min.css'
+// Lucide Icons (tree-shakable SVG — replaces FontAwesome)
+import Icon from './components/common/Icon.vue'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.component('Icon', Icon)
+app.mount('#app')

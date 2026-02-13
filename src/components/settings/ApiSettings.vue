@@ -34,7 +34,7 @@ const updateConfig = (key, value) => {
         <div
           class="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-500/20"
         >
-          <i class="fa-solid fa-plug text-amber-500"></i>
+          <Icon name="fa-plug" class="text-amber-500" />
         </div>
         <span
           class="font-semibold"
@@ -43,13 +43,14 @@ const updateConfig = (key, value) => {
           {{ t.api }}
         </span>
       </div>
-      <i
+      <Icon
+        name="fa-chevron-down"
+        class="transition-transform duration-300"
         :class="[
-          'fa-solid fa-chevron-down transition-transform duration-300',
           openSection === 'api' ? 'rotate-180' : '',
           isDark ? 'text-gray-500' : 'text-gray-400',
         ]"
-      ></i>
+      />
     </button>
 
     <div

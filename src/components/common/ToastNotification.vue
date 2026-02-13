@@ -53,14 +53,14 @@ const iconClass = computed(() => {
         aria-live="assertive"
       >
         <div class="flex items-center gap-3">
-          <i :class="['fa-solid text-xl', iconClass]"></i>
+          <Icon :name="iconClass" class="text-xl" />
           <p class="text-sm font-bold">{{ state.message }}</p>
         </div>
         <button
           @click="hideToast"
           class="p-1 rounded-lg hover:bg-white/20 transition-colors"
         >
-          <i class="fa-solid fa-xmark"></i>
+          <Icon name="fa-xmark" />
         </button>
       </div>
     </div>

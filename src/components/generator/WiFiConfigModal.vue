@@ -35,7 +35,7 @@ const generate = () => {
         class="text-lg font-bold mb-4 flex items-center gap-2"
         :class="isDark ? 'text-white' : 'text-gray-900'"
       >
-        <i class="fa-solid fa-wifi text-blue-500"></i> Wi-Fi Config Builder
+        <Icon name="fa-wifi" class="text-blue-500" /> Wi-Fi Config Builder
       </h3>
 
       <div class="space-y-3">
@@ -118,10 +118,11 @@ const generate = () => {
                     : 'border-gray-400'
                 "
               >
-                <i
-                  v-if="wifiConfig.hidden"
-                  class="fa-solid fa-check text-white text-[10px]"
-                ></i>
+                  <Icon
+                    v-if="wifiConfig.hidden"
+                    name="fa-check"
+                    class="text-white text-[10px]"
+                  />
               </div>
               <span
                 class="text-xs"

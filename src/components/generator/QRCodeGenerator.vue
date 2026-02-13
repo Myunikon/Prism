@@ -175,7 +175,7 @@ defineExpose({ setPayload });
           <div
             class="w-9 h-9 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center"
           >
-            <i class="fa-solid fa-qrcode text-white text-sm"></i>
+            <Icon name="fa-qrcode" class="text-white text-sm" />
           </div>
           <div>
             <h3
@@ -221,7 +221,7 @@ defineExpose({ setPayload });
                 : 'bg-gray-50 border-gray-200 text-gray-600 hover:border-green-400',
             ]"
           >
-            <i :class="['fa-solid text-[10px]', t.icon]"></i>{{ t.label }}
+            <Icon :name="t.icon" class="text-[10px]" />{{ t.label }}
           </button>
         </div>
 
@@ -243,14 +243,13 @@ defineExpose({ setPayload });
         ]"
       >
         <span class="flex items-center gap-2">
-          <i class="fa-solid fa-palette text-purple-500"></i>{{ t.customize }}
+          <Icon name="fa-palette" class="text-purple-500" />{{ t.customize }}
         </span>
-        <i
-          :class="[
-            'fa-solid transition-transform',
-            showOptions ? 'fa-chevron-up' : 'fa-chevron-down',
-          ]"
-        ></i>
+        <Icon
+          name="fa-chevron-down"
+          class="transition-transform"
+          :class="showOptions ? 'rotate-180' : ''"
+        />
       </button>
 
       <!-- Options Panel -->
@@ -425,10 +424,11 @@ defineExpose({ setPayload });
                 @change="handleLogoUpload"
               />
               <div class="flex flex-col items-center gap-1">
-                <i
-                  v-if="!qrLogo"
-                  class="fa-solid fa-cloud-arrow-up text-lg text-gray-400"
-                ></i>
+                  <Icon
+                    v-if="!qrLogo"
+                    name="fa-cloud-arrow-up"
+                    class="text-lg text-gray-400"
+                  />
                 <img
                   v-else
                   :src="qrLogo"
@@ -468,7 +468,7 @@ defineExpose({ setPayload });
                 class="text-[10px] text-orange-400 mt-1"
                 v-if="qrLogoSize > 25 && qrErrorLevel !== 'H'"
               >
-                <i class="fa-solid fa-triangle-exclamation mr-1"></i
+                <Icon name="fa-triangle-exclamation" class="mr-1" />
                 >{{ t.highErrorWarn }}
               </p>
             </div>
@@ -522,7 +522,7 @@ defineExpose({ setPayload });
                   : 'bg-gray-100 text-gray-600',
               ]"
             >
-              <i class="fa-solid fa-redo text-xs"></i>
+              <Icon name="fa-redo" class="text-xs" />
             </button>
           </div>
           <div class="mt-3">
@@ -536,10 +536,11 @@ defineExpose({ setPayload });
             isDark ? 'bg-gray-700' : 'bg-gray-100',
           ]"
         >
-          <i
-            class="fa-solid fa-qrcode text-3xl mb-2"
+          <Icon
+            name="fa-qrcode"
+            class="text-3xl mb-2"
             :class="isDark ? 'text-gray-500' : 'text-gray-300'"
-          ></i>
+          />
           <p
             class="text-xs"
             :class="isDark ? 'text-gray-500' : 'text-gray-400'"

@@ -93,13 +93,13 @@ const tacticalCategories = {
   >
     <div class="flex items-center justify-between mb-3">
       <p class="text-xs font-semibold text-red-500">
-        <i class="fa-solid fa-user-secret mr-1"></i>Payload Forge (Advanced)
+        <Icon name="fa-user-secret" class="mr-1" />Payload Forge (Advanced)
       </p>
       <button
         @click="$emit('openWifi')"
         class="text-[10px] px-2 py-1 rounded bg-blue-500 text-white font-bold hover:bg-blue-600 transition-colors"
       >
-        <i class="fa-solid fa-wifi mr-1"></i>Builder
+        <Icon name="fa-wifi" class="mr-1" />Builder
       </button>
     </div>
 
@@ -118,7 +118,7 @@ const tacticalCategories = {
             : 'bg-gray-100 border-gray-300 text-gray-500',
         ]"
       >
-        <i :class="['fa-solid mr-1', cat.icon]"></i>{{ cat.label }}
+        <Icon :name="cat.icon" class="mr-1" />{{ cat.label }}
       </button>
     </div>
 
@@ -157,7 +157,7 @@ const tacticalCategories = {
       "
       class="text-[10px] text-orange-500 mt-2"
     >
-      <i class="fa-solid fa-triangle-exclamation"></i> 1D Barcodes may not
+      <Icon name="fa-triangle-exclamation" /> 1D Barcodes may not
       support this payload size.
     </p>
   </div>

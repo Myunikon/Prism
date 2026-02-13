@@ -39,5 +39,14 @@ export default defineConfig({
   build: {
     outDir: "dist",
     assetsDir: "assets",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-qr': ['html5-qrcode', 'qrcode', 'jsbarcode', 'bwip-js'],
+          'vendor-forensics': ['exifr'],
+          'vendor-maps': ['leaflet'],
+        }
+      }
+    }
   },
 });

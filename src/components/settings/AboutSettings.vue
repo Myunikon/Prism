@@ -23,7 +23,7 @@ defineProps({
       <div
         class="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-500/20"
       >
-        <i class="fa-solid fa-info-circle text-gray-500"></i>
+        <Icon name="fa-info-circle" class="text-gray-500" />
       </div>
       <span
         class="font-semibold"
@@ -61,7 +61,7 @@ defineProps({
           target="_blank"
           class="flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors"
         >
-          <i class="fa-brands fa-github text-lg"></i>
+          <Icon name="fa-github" class="text-lg" />
           Myunikon
         </a>
       </div>

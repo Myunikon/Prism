@@ -25,7 +25,7 @@ const openGPS = (gps) => {
       class="text-xs font-bold uppercase tracking-wide mb-3 flex items-center gap-2"
       :class="isDark ? 'text-gray-400' : 'text-gray-500'"
     >
-      <i class="fa-solid fa-camera text-green-500"></i>{{ t.exifMetadata }}
+      <Icon name="fa-camera" class="text-green-500" />{{ t.exifMetadata }}
     </h4>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
       <div
@@ -155,7 +155,7 @@ const openGPS = (gps) => {
         @click="openGPS(exifData.gps)"
         class="w-full p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm font-bold cursor-pointer flex items-center justify-center gap-2 hover:shadow-lg transition-all"
       >
-        <i class="fa-solid fa-location-dot"></i>
+        <Icon name="fa-location-dot" />
         {{ t.viewMap }} ({{ exifData.gps.lat }}, {{ exifData.gps.lon }})
       </button>
     </div>
@@ -168,6 +168,6 @@ const openGPS = (gps) => {
       isDark ? 'bg-gray-700 text-gray-500' : 'bg-gray-100 text-gray-400',
     ]"
   >
-    <i class="fa-solid fa-camera-slash mr-1"></i>{{ t.noExif }}
+    <Icon name="fa-camera-slash" class="mr-1" />{{ t.noExif }}
   </div>
 </template>

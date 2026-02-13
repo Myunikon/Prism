@@ -201,7 +201,7 @@ const copyToClipboard = () => {
         <div
           class="w-14 h-14 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center"
         >
-          <i :class="['fa-solid text-2xl text-white', threat.icon]"></i>
+          <Icon :name="threat.icon" class="text-2xl text-white" />
         </div>
         <div class="flex-1">
           <div class="flex items-center gap-2 mb-1">
@@ -227,16 +227,17 @@ const copyToClipboard = () => {
           :disabled="isAdded"
           class="flex flex-col items-center justify-center w-14 h-14 bg-white/20 hover:bg-white/30 backdrop-blur rounded-2xl transition-all cursor-pointer text-white"
         >
-          <i
-            class="fa-solid text-xl"
-            :class="
+          <Icon
+            :name="
               isAdded
                 ? 'fa-check'
                 : isDuplicate
-                ? 'fa-triangle-exclamation text-yellow-300'
+                ? 'fa-triangle-exclamation'
                 : 'fa-folder-plus'
             "
-          ></i>
+            class="text-xl"
+            :class="isDuplicate ? 'text-yellow-300' : ''"
+          />
           <span class="text-[10px] font-bold mt-1">{{
             isAdded ? t.saved : isDuplicate ? t.exists : t.save
           }}</span>
@@ -253,7 +254,7 @@ const copyToClipboard = () => {
           : 'bg-gray-50 border-gray-100',
       ]"
     >
-      <i class="fa-solid fa-lightbulb text-yellow-500"></i>
+      <Icon name="fa-lightbulb" class="text-yellow-500" />
       <p class="text-sm" :class="isDark ? 'text-gray-300' : 'text-gray-600'">
         <strong>{{ t.whatIsThis }}</strong> {{ typeExplain }}
       </p>
@@ -274,7 +275,7 @@ const copyToClipboard = () => {
             : 'border-transparent text-gray-400 hover:text-gray-600',
         ]"
       >
-        <i class="fa-solid fa-list-check"></i>{{ t.summary }}
+        <Icon name="fa-list-check" />{{ t.summary }}
       </button>
       <button
         @click="activeTab = 'details'"
@@ -287,7 +288,7 @@ const copyToClipboard = () => {
             : 'border-transparent text-gray-400 hover:text-gray-600',
         ]"
       >
-        <i class="fa-solid fa-magnifying-glass"></i>{{ t.details }}
+        <Icon name="fa-magnifying-glass" />{{ t.details }}
       </button>
       <button
         v-if="analysis.type === 'URL'"
@@ -301,7 +302,7 @@ const copyToClipboard = () => {
             : 'border-transparent text-gray-400 hover:text-gray-600',
         ]"
       >
-        <i class="fa-solid fa-virus-slash"></i>{{ t.virusTotal }}
+        <Icon name="fa-virus-slash" />{{ t.virusTotal }}
       </button>
       <button
         @click="activeTab = 'raw'"
@@ -314,7 +315,7 @@ const copyToClipboard = () => {
             : 'border-transparent text-gray-400 hover:text-gray-600',
         ]"
       >
-        <i class="fa-solid fa-code"></i>{{ t.raw }}
+        <Icon name="fa-code" />{{ t.raw }}
       </button>
     </div>
 

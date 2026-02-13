@@ -126,7 +126,7 @@ const filteredTools = computed(() =>
       ]"
     >
       <div class="flex items-center gap-2 mb-3">
-        <i class="fa-solid fa-keyboard text-orange-500 text-lg"></i>
+        <Icon name="fa-keyboard" class="text-orange-500 text-lg" />
         <label
           class="text-sm font-bold"
           :class="isDark ? 'text-white' : 'text-gray-800'"
@@ -149,7 +149,7 @@ const filteredTools = computed(() =>
             ]"
             :title="t.magicWand"
           >
-            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            <Icon name="fa-wand-magic-sparkles" class="text-xs" />
           </button>
         </div>
       </div>
@@ -183,7 +183,7 @@ const filteredTools = computed(() =>
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
         ]"
       >
-        <i :class="['fa-solid', cat.icon]"></i>{{ t["cat_" + cat.id] }}
+        <Icon :name="cat.icon" />{{ t["cat_" + cat.id] }}
       </button>
     </div>
 
@@ -212,7 +212,7 @@ const filteredTools = computed(() =>
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
           ]"
         >
-          <i :class="['fa-solid text-sm md:text-base', tool.icon]"></i>
+          <Icon :name="tool.icon" class="text-sm md:text-base" />
           <span class="break-words w-full">{{ tool.name }}</span>
         </button>
       </div>
@@ -228,7 +228,7 @@ const filteredTools = computed(() =>
       ]"
     >
       <div class="flex items-center gap-2 mb-3">
-        <i class="fa-solid fa-terminal text-green-500 text-lg"></i>
+        <Icon name="fa-terminal" class="text-green-500 text-lg" />
         <label
           class="text-sm font-bold"
           :class="isDark ? 'text-white' : 'text-gray-800'"
@@ -262,7 +262,7 @@ const filteredTools = computed(() =>
           aria-label="Copy output"
           class="flex-1 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
         >
-          <i class="fa-regular fa-copy"></i>{{ t.copy }}
+          <Icon name="fa-copy" />{{ t.copy }}
         </button>
         <button
           v-if="output"
@@ -279,7 +279,7 @@ const filteredTools = computed(() =>
               : 'bg-gray-100 hover:bg-gray-200 text-gray-600',
           ]"
         >
-          <i class="fa-solid fa-arrow-up"></i> {{ t.useAsInput }}
+          <Icon name="fa-arrow-up" /> {{ t.useAsInput }}
         </button>
       </div>
     </div>

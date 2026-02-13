@@ -93,7 +93,7 @@ const t = computed(
       <div
         class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl flex items-center justify-center shadow-lg"
       >
-        <i class="fa-solid fa-gear text-white text-xl md:text-2xl"></i>
+        <Icon name="fa-gear" class="text-white text-xl md:text-2xl" />
       </div>
       <div>
         <h2

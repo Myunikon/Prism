@@ -55,12 +55,10 @@ defineProps({
             ]"
           >
             {{ analysis.qris.calculatedCRC }}
-            <i
-              :class="[
-                'fa-solid ml-1',
-                analysis.qris.isValid ? 'fa-check' : 'fa-xmark',
-              ]"
-            ></i>
+            <Icon
+              :name="analysis.qris.isValid ? 'fa-check' : 'fa-xmark'"
+              class="ml-1"
+            />
           </p>
         </div>
       </div>
@@ -139,12 +137,10 @@ defineProps({
         <div
           class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center"
         >
-          <i
-            :class="[
-              'fa-solid text-xl text-white',
-              analysis.protocol.icon || 'fa-qrcode',
-            ]"
-          ></i>
+          <Icon
+            :name="analysis.protocol.icon || 'fa-qrcode'"
+            class="text-xl text-white"
+          />
         </div>
         <div>
           <h3
@@ -211,7 +207,7 @@ defineProps({
       class="text-center py-8"
       :class="isDark ? 'text-gray-500' : 'text-gray-400'"
     >
-      <i class="fa-solid fa-info-circle text-3xl mb-2"></i>
+      <Icon name="fa-info-circle" class="text-3xl mb-2" />
       <p class="text-sm">{{ t.noStructuredData }}</p>
     </div>
 
@@ -225,7 +221,7 @@ defineProps({
       ]"
     >
       <span
-        ><i class="fa-solid fa-chart-line mr-1"></i>{{ t.entropy }}:
+        ><Icon name="fa-chart-line" class="mr-1" />{{ t.entropy }}:
         {{
           typeof analysis.entropy === "number"
             ? analysis.entropy.toFixed(2)
@@ -233,7 +229,7 @@ defineProps({
         }}</span
       >
       <span
-        ><i class="fa-solid fa-weight-scale mr-1"></i>{{ t.size }}:
+        ><Icon name="fa-weight-scale" class="mr-1" />{{ t.size }}:
         {{ analysis.size }} {{ t.bytes }}</span
       >
     </div>

@@ -20,7 +20,7 @@ const copyToClipboard = () => {
         class="text-xs font-bold uppercase tracking-wide mb-2 block"
         :class="isDark ? 'text-gray-400' : 'text-gray-500'"
       >
-        <i class="fa-solid fa-file-lines mr-1"></i>{{ t.decodedContent }}
+        <Icon name="fa-file-lines" class="mr-1" />{{ t.decodedContent }}
       </label>
       <div
         :class="[
@@ -40,14 +40,14 @@ const copyToClipboard = () => {
               : 'bg-gray-100 hover:bg-gray-200 text-gray-600',
           ]"
         >
-          <i class="fa-regular fa-copy"></i>{{ t.copy }}
+          <Icon name="fa-copy" />{{ t.copy }}
         </button>
         <button
           v-if="analysis.type === 'URL'"
           @click="$emit('scanVt')"
           class="flex-1 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
         >
-          <i class="fa-solid fa-virus-slash"></i>{{ t.scanUrl }}
+          <Icon name="fa-virus-slash" />{{ t.scanUrl }}
         </button>
       </div>
     </div>
@@ -58,7 +58,7 @@ const copyToClipboard = () => {
         class="text-xs font-bold uppercase tracking-wide"
         :class="isDark ? 'text-gray-400' : 'text-gray-500'"
       >
-        <i class="fa-solid fa-exclamation-triangle text-red-500 mr-1"></i
+        <Icon name="fa-triangle-exclamation" class="mr-1 text-red-500" />
         >{{ t.riskFactors }}
       </label>
       <div
@@ -69,7 +69,7 @@ const copyToClipboard = () => {
           isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-700',
         ]"
       >
-        <i class="fa-solid fa-circle-exclamation"></i>{{ flag }}
+        <Icon name="fa-circle-exclamation" />{{ flag }}
       </div>
     </div>
     <div
@@ -79,7 +79,7 @@ const copyToClipboard = () => {
         isDark ? 'bg-green-900/20' : 'bg-green-50',
       ]"
     >
-      <i class="fa-solid fa-check-circle text-green-500 text-xl mb-2"></i>
+      <Icon name="fa-check-circle" class="text-green-500 text-xl mb-2" />
       <p class="text-sm font-medium text-green-600">{{ t.noThreats }}</p>
     </div>
   </div>

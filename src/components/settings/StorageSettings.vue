@@ -52,7 +52,7 @@ const handleConfirm = async () => {
         <div
           class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-500/20"
         >
-          <i class="fa-solid fa-database text-emerald-500"></i>
+          <Icon name="fa-database" class="text-emerald-500" />
         </div>
         <span
           class="font-semibold"
@@ -61,13 +61,14 @@ const handleConfirm = async () => {
           {{ store.config.language === "id" ? "Penyimpanan" : "Storage" }}
         </span>
       </div>
-      <i
+      <Icon
+        name="fa-chevron-down"
+        class="transition-transform duration-300"
         :class="[
-          'fa-solid fa-chevron-down transition-transform duration-300',
           openSection === 'storage' ? 'rotate-180' : '',
           isDark ? 'text-gray-500' : 'text-gray-400',
         ]"
-      ></i>
+      />
     </button>
 
     <div
@@ -87,7 +88,7 @@ const handleConfirm = async () => {
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i class="fa-solid fa-calendar-days text-emerald-500"></i>
+              <Icon name="fa-calendar-days" class="text-emerald-500" />
             </div>
             <div>
               <p
@@ -151,7 +152,7 @@ const handleConfirm = async () => {
               class="w-11 h-11 rounded-xl flex items-center justify-center"
               :class="isDark ? 'bg-gray-700' : 'bg-gray-100'"
             >
-              <i class="fa-solid fa-list-ol text-cyan-500"></i>
+              <Icon name="fa-list-ol" class="text-cyan-500" />
             </div>
             <div>
               <p
@@ -228,11 +229,11 @@ const handleConfirm = async () => {
               v-if="showSuccess"
               class="absolute inset-0 bg-green-500 flex items-center justify-center text-white animate-fade-in"
             >
-              <i class="fa-solid fa-check mr-2"></i>
+              <Icon name="fa-check" class="mr-2" />
               {{ store.config.language === "id" ? "Berhasil!" : "Success!" }}
             </div>
             <template v-else>
-              <i class="fa-solid fa-trash-can"></i>
+              <Icon name="fa-trash-can" />
               {{
                 store.config.language === "id"
                   ? "Hapus Cache & Sampah"
