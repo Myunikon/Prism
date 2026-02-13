@@ -135,11 +135,12 @@ const filteredTools = computed(() =>
         <div class="ml-auto flex items-center gap-3">
           <span
             class="text-xs"
-            :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+            :class="isDark ? 'text-gray-400' : 'text-gray-400'"
             >{{ input.length }} {{ t.chars }}</span
           >
           <button
             @click="autoDetect"
+            aria-label="Auto-detect and decode"
             :class="[
               'p-1.5 rounded-lg transition-all hover:scale-110 shadow-sm border',
               isDark
@@ -166,10 +167,12 @@ const filteredTools = computed(() =>
     </div>
 
     <!-- Category Tabs -->
-    <div class="flex gap-1 overflow-x-auto pb-1 flex-shrink-0 min-h-[40px]">
+    <div role="tablist" aria-label="Tool categories" class="flex gap-1 overflow-x-auto pb-1 flex-shrink-0 min-h-[40px] scroll-fade-right">
       <button
         v-for="cat in categories"
         :key="cat.id"
+        role="tab"
+        :aria-selected="activeCategory === cat.id"
         @click="activeCategory = cat.id"
         :class="[
           'px-3 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap',
@@ -235,7 +238,7 @@ const filteredTools = computed(() =>
           v-if="activeTool"
           class="text-xs ml-auto px-2 py-0.5 rounded-lg"
           :class="
-            isDark ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'
+            isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-500'
           "
         >
           {{ tools.find((t) => t.id === activeTool)?.name }}
@@ -256,12 +259,14 @@ const filteredTools = computed(() =>
         <button
           v-if="output"
           @click="navigator.clipboard.writeText(output)"
+          aria-label="Copy output"
           class="flex-1 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
         >
           <i class="fa-regular fa-copy"></i>{{ t.copy }}
         </button>
         <button
           v-if="output"
+          aria-label="Use output as input"
           @click="
             input = output;
             output = '';

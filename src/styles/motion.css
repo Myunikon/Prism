@@ -1,8 +1,8 @@
 /* ===================================
-   MOTION PREFERENCES
+   MOTION PREFERENCES — Apple HIG
    =================================== */
 
-/* App-level motion control - takes priority over OS preferences */
+/* App-level motion control — respects user preference */
 .motion-reduce *,
 .motion-reduce *::before,
 .motion-reduce *::after {
@@ -11,57 +11,71 @@
   transition-duration: 0.01ms !important;
 }
 
-/* When animations are enabled in app, override any disable rules */
+/* When animations are enabled in app, ensure they work */
 .motion-safe .animate-fade-in {
-  animation: fadeIn 0.3s ease-out !important;
+  animation: fadeIn 0.3s ease-out;
 }
+
 .motion-safe .animate-fade-out {
-  animation: fadeOut 0.2s ease-in !important;
+  animation: fadeOut 0.2s ease-in;
 }
+
 .motion-safe .animate-slide-up {
-  animation: slideUp 0.4s ease-out !important;
+  animation: slideUp 0.3s ease-out;
 }
+
 .motion-safe .animate-slide-down {
-  animation: slideDown 0.4s ease-out !important;
+  animation: slideDown 0.3s ease-out;
 }
+
 .motion-safe .animate-slide-left {
-  animation: slideLeft 0.4s ease-out !important;
+  animation: slideLeft 0.3s ease-out;
 }
+
 .motion-safe .animate-slide-right {
-  animation: slideRight 0.4s ease-out !important;
+  animation: slideRight 0.3s ease-out;
 }
+
 .motion-safe .animate-scale-in {
-  animation: scaleIn 0.3s ease-out !important;
+  animation: scaleIn 0.25s ease-out;
 }
+
 .motion-safe .animate-bounce-in {
-  animation: bounceIn 0.5s ease-out !important;
+  animation: bounceIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
 .motion-safe .animate-pulse {
-  animation: pulse 2s ease-in-out infinite !important;
+  animation: pulse 2s ease-in-out infinite;
 }
+
 .motion-safe .animate-bounce {
-  animation: bounce 1s ease-in-out infinite !important;
+  animation: bounce 1s ease-in-out infinite;
 }
+
 .motion-safe .animate-wiggle {
-  animation: wiggle 0.5s ease-in-out !important;
+  animation: wiggle 0.5s ease-in-out;
 }
+
 .motion-safe .animate-spin {
-  animation: spin 1s linear infinite !important;
+  animation: spin 1s linear infinite;
 }
+
 .motion-safe .animate-float {
-  animation: float 3s ease-in-out infinite !important;
+  animation: float 3s ease-in-out infinite;
 }
+
 .motion-safe .animate-glow {
-  animation: glow 2s ease-in-out infinite !important;
+  animation: glow 2s ease-in-out infinite;
 }
 
 /* Smooth transitions for interactive elements */
 @media (prefers-reduced-motion: no-preference) {
+
   button,
   a,
   input,
   textarea,
   select {
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 }

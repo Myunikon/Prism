@@ -94,13 +94,15 @@ const handleMoreItem = (item) => {
 <template>
   <!-- Desktop Header with Animated Gradient -->
   <header
+    role="navigation"
+    aria-label="Main navigation"
     :class="[
       'hidden md:flex items-center justify-between px-6 py-4 sticky top-0 z-50 shadow-lg',
       animationsEnabled ? 'animate-gradient' : '',
     ]"
     style="
-      background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #667eea);
-      background-size: 300% 300%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      background-size: 200% 200%;
     "
   >
     <div class="flex items-center gap-3 group">
@@ -119,11 +121,16 @@ const handleMoreItem = (item) => {
     </div>
 
     <nav
+      role="tablist"
+      aria-label="App sections"
       class="flex items-center gap-1 bg-white/10 backdrop-blur rounded-xl p-1"
     >
       <button
         v-for="tab in allTabs"
         :key="tab.id"
+        role="tab"
+        :aria-selected="store.currentTab === tab.id"
+        :aria-label="tab.label"
         @click="switchTab(tab.id)"
         :class="[
           'px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer flex items-center gap-2 btn-press',
@@ -148,6 +155,7 @@ const handleMoreItem = (item) => {
 
     <button
       @click="store.isGuideOpen = true"
+      aria-label="Help"
       :class="[
         'flex items-center gap-2 px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-xl cursor-pointer font-semibold btn-press',
         animationsEnabled ? 'transition-all duration-200 hover:scale-105' : '',
@@ -160,24 +168,14 @@ const handleMoreItem = (item) => {
 
   <!-- Mobile Bottom Nav with Glass Effect -->
   <nav
+    role="navigation"
+    aria-label="Mobile navigation"
     :class="[
-      'fixed bottom-4 left-4 right-4 z-50 md:hidden border glass-strong rounded-2xl shadow-xl',
+      'fixed bottom-0 left-0 right-0 z-50 md:hidden border-t glass-strong pb-[env(safe-area-inset-bottom)]',
       isDark ? 'bg-gray-900/95 border-gray-800' : 'bg-white/95 border-gray-200',
     ]"
   >
     <!-- Active Tab Indicator -->
-    <div
-      v-if="currentTabIndex >= 0 && currentTabIndex < 4"
-      class="absolute top-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300"
-      :style="{
-        width: '20%',
-        left: `calc(${currentTabIndex * 20}% + 10% - 10%)`,
-      }"
-    ></div>
-    <!-- Simplified: 
-         Each item 20%. 
-         Left = currentTabIndex * 20%
-    -->
     <div
       v-if="currentTabIndex >= 0"
       class="absolute top-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300"
@@ -249,6 +247,9 @@ const handleMoreItem = (item) => {
       <button
         v-for="tab in mainTabs"
         :key="tab.id"
+        role="tab"
+        :aria-selected="store.currentTab === tab.id"
+        :aria-label="tab.label"
         @click="switchTab(tab.id)"
         :class="[
           'flex flex-col items-center justify-center gap-1 cursor-pointer btn-press relative',
@@ -258,25 +259,27 @@ const handleMoreItem = (item) => {
               ? 'text-blue-400'
               : 'text-blue-600'
             : isDark
-            ? 'text-gray-500'
-            : 'text-gray-400',
+            ? 'text-gray-400'
+            : 'text-gray-500',
         ]"
       >
         <i
           :class="[
-            'fa-solid text-xl',
+            'fa-solid text-lg',
             tab.icon,
             store.currentTab === tab.id && animationsEnabled
               ? 'animate-bounce-in'
               : '',
           ]"
         ></i>
-        <span class="text-[10px] font-medium">{{ tab.label }}</span>
+        <span class="text-[11px] font-medium">{{ tab.label }}</span>
       </button>
 
       <!-- More Button -->
       <button
         @click="showMore = !showMore"
+        aria-label="More options"
+        :aria-expanded="showMore"
         :class="[
           'flex flex-col items-center justify-center gap-1 cursor-pointer relative btn-press',
           animationsEnabled ? 'transition-all duration-200' : '',

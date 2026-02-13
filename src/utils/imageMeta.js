@@ -31,11 +31,12 @@ export const extractImageMeta = (file) => {
         img.naturalWidth > img.naturalHeight
           ? "Landscape"
           : img.naturalWidth < img.naturalHeight
-          ? "Portrait"
-          : "Square";
+            ? "Portrait"
+            : "Square";
+      URL.revokeObjectURL(img.src);
       resolve(meta);
     };
-    img.onerror = () => resolve(meta);
+    img.onerror = () => { URL.revokeObjectURL(img.src); resolve(meta); };
     img.src = URL.createObjectURL(file);
   });
 };

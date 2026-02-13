@@ -128,7 +128,7 @@ onMounted(() => {
         <div
           v-for="tab in tabs"
           :key="tab.id"
-          class="snap-center flex-shrink-0 w-full h-full min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-4 pb-24"
+          class="snap-center flex-shrink-0 w-full h-full min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-4 pb-20"
           :class="[
             isDark ? 'bg-gray-900/95' : 'bg-white/80',
             animationsEnabled ? 'animate-fade-scale' : '',

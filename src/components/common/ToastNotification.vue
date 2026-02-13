@@ -49,6 +49,8 @@ const iconClass = computed(() => {
           'px-4 py-3 rounded-2xl shadow-xl flex items-center justify-between gap-3 pointer-events-auto backdrop-blur-sm',
           typeClasses,
         ]"
+        role="alert"
+        aria-live="assertive"
       >
         <div class="flex items-center gap-3">
           <i :class="['fa-solid text-xl', iconClass]"></i>

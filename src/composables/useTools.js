@@ -7,10 +7,10 @@ import HmacSHA256 from 'crypto-js/hmac-sha256';
 import { xorBruteForce, caesarBruteForce } from '../utils/cipher.js';
 import { defangUrl, refangUrl } from '../utils/sanitizer.js';
 import {
-  parseMultiFormatTime,
-  toUnix,
-  toISO,
-  toUTC,
+    parseMultiFormatTime,
+    toUnix,
+    toISO,
+    toUTC,
 } from "../utils/timeIntel.js";
 import { parseUserAgent, calcSubnet, getLocalIP } from '../utils/networkIntel.js';
 import { lookupOui } from '../utils/oui.js';
@@ -42,53 +42,51 @@ export function useTools() {
         { id: 'ext_email', name: 'Extract Emails', icon: 'fa-envelope', color: 'from-sky-500 to-blue-500', category: 'extract' },
         { id: 'ext_ip', name: 'Extract IPs', icon: 'fa-server', color: 'from-teal-500 to-cyan-500', category: 'extract' },
         { id: 'ext_url', name: 'Extract URLs', icon: 'fa-globe', color: 'from-indigo-500 to-blue-500', category: 'extract' },
-        
+
         // Network Intel (NEW)
         { id: 'ua_parser', name: 'UA Parser', icon: 'fa-robot', color: 'from-indigo-500 to-violet-500', category: 'network' },
-    {
-      id: "subnet_calc",
-      name: "Subnet Calc",
-      category: "network",
-      icon: "fa-network-wired",
-      color: "from-gray-500 to-slate-500",
-      category: "network",
-      icon: "fa-network-wired",
-      color: "from-gray-500 to-slate-500",
-    },
-    {
-      id: "mac_oui",
-      name: "MAC Vendor",
-      category: "network",
-      icon: "fa-barcode",
-      color: "from-teal-500 to-emerald-500",
-      placeholder: "Enter MAC Address...",
-    },
-    {
-      id: "local_ip",
-      name: "Local IP Leak",
-      category: "network",
-      icon: "fa-wifi",
-      color: "from-red-500 to-orange-500",
-      placeholder: "Click Run to detect...",
-    },
-    // OSINT
-    {
-      id: "google_dork",
-      name: "Google Dorks",
-      category: "osint",
-      icon: "fa-magnifying-glass-arrow-right",
-      color: "from-blue-600 to-blue-400",
-      placeholder: "Enter domain (site:example.com) or keywords...",
-    },
-    {
-      id: "user_recon",
-      name: "Username Recon",
-      category: "osint",
-      icon: "fa-user-secret",
-      color: "from-indigo-500 to-purple-500",
-      placeholder: "Enter username to tracking...",
-    },
-    // Hashtegory: 'network' },
+        {
+            id: "subnet_calc",
+            name: "Subnet Calc",
+            category: "network",
+            icon: "fa-network-wired",
+            color: "from-gray-500 to-slate-500",
+        },
+        {
+            id: "mac_oui",
+            name: "MAC Vendor",
+            category: "network",
+            icon: "fa-barcode",
+            color: "from-teal-500 to-emerald-500",
+            placeholder: "Enter MAC Address...",
+        },
+        {
+            id: "local_ip",
+            name: "Local IP Leak",
+            category: "network",
+            icon: "fa-wifi",
+            color: "from-red-500 to-orange-500",
+            placeholder: "Click Run to detect...",
+        },
+        // OSINT
+        {
+            id: "google_dork",
+            name: "Google Dorks",
+            category: "osint",
+            icon: "fa-magnifying-glass-arrow-right",
+            color: "from-blue-600 to-blue-400",
+            placeholder: "Enter domain (site:example.com) or keywords...",
+        },
+        {
+            id: "user_recon",
+            name: "Username Recon",
+            category: "osint",
+            icon: "fa-user-secret",
+            color: "from-indigo-500 to-purple-500",
+            placeholder: "Enter username to track...",
+        },
+
+
 
         // Formatters
         { id: 'json_format', name: 'Format JSON', icon: 'fa-code', color: 'from-yellow-500 to-amber-500', category: 'format' },
@@ -102,8 +100,8 @@ export function useTools() {
 
     const strategies = {
         // Encoders/Decoders
-        b64_decode: (input) => { try { return atob(input); } catch(e) { return 'Invalid Base64'; } },
-        b64_encode: (input) => btoa(input),
+        b64_decode: (input) => { try { return atob(input); } catch (e) { return 'Invalid Base64'; } },
+        b64_encode: (input) => btoa(unescape(encodeURIComponent(input))),
         url_decode: (input) => decodeURIComponent(input),
         url_encode: (input) => encodeURIComponent(input),
         hex_decode: (input) => input.match(/.{1,2}/g)?.map(byte => String.fromCharCode(parseInt(byte, 16))).join('') || 'Invalid hex',
@@ -159,17 +157,12 @@ export function useTools() {
         user_recon: (input) => searchUsername(input),
 
         // Formatters
-        json_format: (input) => { try { return JSON.stringify(JSON.parse(input), null, 2); } catch(e) { return 'Invalid JSON'; } },
+        json_format: (input) => { try { return JSON.stringify(JSON.parse(input), null, 2); } catch (e) { return 'Invalid JSON'; } },
         slugify: (input) => input.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, ''),
 
         // Utils
         time_multi: (input) => parseMultiFormatTime(input),
-        uuid_gen: () => {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        },
+        uuid_gen: () => crypto.randomUUID(),
         count_chars: (input) => {
             return `Characters: ${input.length}\nWords: ${input.trim().split(/\s+/).filter(Boolean).length}\nLines: ${input.split('\n').length}\nBytes: ${new Blob([input]).size}`;
         }
@@ -177,11 +170,11 @@ export function useTools() {
 
     const runTool = async (toolId, input) => {
         if (!input && !['uuid_gen', 'time_multi', 'local_ip'].includes(toolId)) return '';
-        
+
         try {
             const strategy = strategies[toolId];
             if (!strategy) throw new Error('Tool not implemented');
-            
+
             return await strategy(input);
         } catch (e) {
             return `Error: ${e.message}`;

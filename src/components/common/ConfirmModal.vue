@@ -113,6 +113,10 @@ watch(
         >
           <div
             v-if="show"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-modal-title"
+            aria-describedby="confirm-modal-message"
             :class="[
               'relative w-full max-w-sm rounded-2xl shadow-2xl p-6',
               isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white',
@@ -132,6 +136,7 @@ watch(
 
             <!-- Title -->
             <h3
+              id="confirm-modal-title"
               class="text-lg font-bold text-center mb-2"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
@@ -140,8 +145,9 @@ watch(
 
             <!-- Message -->
             <p
+              id="confirm-modal-message"
               class="text-sm text-center mb-6"
-              :class="isDark ? 'text-gray-400' : 'text-gray-500'"
+              :class="isDark ? 'text-gray-300' : 'text-gray-500'"
             >
               {{ message }}
             </p>
