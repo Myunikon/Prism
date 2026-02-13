@@ -278,27 +278,29 @@ defineExpose({ setPayload });
     <div class="lg:col-span-2">
       <div
         :class="[
-          'rounded-2xl p-4 shadow-sm border',
+          'rounded-2xl p-5 shadow-sm border',
           animationsEnabled ? 'animate-fade-in' : '',
-          isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200',
+          isDark
+            ? 'bg-gray-800/90 border-gray-700 backdrop-blur'
+            : 'bg-white/90 border-gray-100 backdrop-blur',
         ]"
       >
         <div class="flex items-center gap-3 mb-3">
           <div
-            class="w-9 h-9 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center"
+            class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-500/20"
           >
-            <Icon name="fa-barcode" class="text-white text-sm" />
+            <Icon name="fa-barcode" class="text-orange-500" />
           </div>
           <div>
             <h3
-              class="font-bold text-sm"
+              class="font-semibold text-base"
               :class="isDark ? 'text-white' : 'text-gray-800'"
             >
               {{ t.generatorTitle }}
             </h3>
             <p
               class="text-xs"
-              :class="isDark ? 'text-gray-500' : 'text-gray-400'"
+              :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
               {{ t.generatorDesc }}
             </p>
@@ -333,8 +335,13 @@ defineExpose({ setPayload });
         </div>
 
         <!-- Barcode Options -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-          <div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div
+            :class="[
+              'p-3 rounded-xl border',
+              isDark ? 'bg-gray-700/30 border-gray-700' : 'bg-gray-50 border-gray-100',
+            ]"
+          >
             <p
               class="text-xs font-semibold mb-2"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
@@ -349,23 +356,37 @@ defineExpose({ setPayload });
               class="w-full accent-orange-500 cursor-pointer"
             />
           </div>
-          <div class="flex items-center justify-between">
+          <div
+            :class="[
+              'p-3 rounded-xl border flex items-center justify-between',
+              isDark ? 'bg-gray-700/30 border-gray-700' : 'bg-gray-50 border-gray-100',
+            ]"
+          >
             <p
               class="text-xs font-semibold"
               :class="isDark ? 'text-gray-400' : 'text-gray-500'"
             >
               {{ t.showText }}
             </p>
-            <div
+            <!-- Custom Toggle -->
+            <button
               @click="barcodeShowText = !barcodeShowText"
-              class="w-10 h-6 rounded-full p-1 cursor-pointer transition-colors"
-              :class="barcodeShowText ? 'bg-orange-500' : 'bg-gray-300'"
+              :class="[
+                'relative w-12 h-7 rounded-full cursor-pointer transition-colors duration-300',
+                barcodeShowText
+                  ? 'bg-orange-500'
+                  : isDark
+                  ? 'bg-gray-600'
+                  : 'bg-gray-300',
+              ]"
             >
               <div
-                class="w-4 h-4 bg-white rounded-full shadow-sm transition-transform"
-                :class="barcodeShowText ? 'translate-x-4' : 'translate-x-0'"
+                :class="[
+                  'absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300',
+                  barcodeShowText ? 'translate-x-6' : 'translate-x-1',
+                ]"
               ></div>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -375,11 +396,13 @@ defineExpose({ setPayload });
             v-model="barcodePayload"
             @input="generateBarcode"
             :class="[
-              'flex-1 border rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500',
-              barcodeError ? 'border-red-500' : '',
-              isDark
-                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
-                : 'bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-400',
+              'flex-1 rounded-xl p-4 text-sm focus:outline-none focus:ring-0 transition-colors',
+              barcodeError ? 'bg-red-500/10 text-red-500 placeholder-red-400' : '',
+              isDark && !barcodeError
+                ? 'bg-gray-700/50 text-white placeholder-gray-500'
+                : !barcodeError
+                ? 'bg-gray-100 text-gray-800 placeholder-gray-400'
+                : '',
             ]"
             :placeholder="currentFormat?.desc || 'Enter value...'"
           />
@@ -416,9 +439,11 @@ defineExpose({ setPayload });
     <div>
       <div
         :class="[
-          'rounded-2xl p-4 shadow-sm border',
+          'rounded-2xl p-5 shadow-sm border sticky top-4',
           animationsEnabled ? 'animate-slide-left' : '',
-          isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200',
+          isDark
+            ? 'bg-gray-800/90 border-gray-700 backdrop-blur'
+            : 'bg-white/90 border-gray-100 backdrop-blur',
         ]"
       >
         <div

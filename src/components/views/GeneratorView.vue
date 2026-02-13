@@ -43,38 +43,42 @@ const t = computed(() => strings[store.config.language] || strings.en);
 <template>
   <div class="min-h-full pb-20">
     <!-- Type Selector -->
+    <!-- Type Selector (Segmented Control) -->
     <div
       :class="[
-        'rounded-2xl p-1.5 shadow-sm border flex gap-1 mb-4',
-        animationsEnabled ? 'animate-slide-down' : '',
-        isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200',
+        'p-1.5 rounded-xl flex gap-1 mb-4',
+        isDark ? 'bg-gray-800' : 'bg-gray-100',
       ]"
     >
       <button
         @click="generatorType = 'qr'"
         :class="[
-          'flex-1 py-2.5 rounded-xl font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 text-sm',
+          'flex-1 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer flex items-center justify-center gap-2',
           generatorType === 'qr'
-            ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg'
+            ? isDark
+              ? 'bg-gray-600 text-white shadow-sm'
+              : 'bg-white text-gray-800 shadow-sm'
             : isDark
-            ? 'text-gray-400 hover:text-white'
+            ? 'text-gray-400 hover:text-gray-200'
             : 'text-gray-500 hover:text-gray-700',
         ]"
       >
-        <Icon name="fa-qrcode" />{{ t.qrCode }}
+        <Icon name="fa-qrcode" class="text-xs" />{{ t.qrCode }}
       </button>
       <button
         @click="generatorType = 'barcode'"
         :class="[
-          'flex-1 py-2.5 rounded-xl font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 text-sm',
+          'flex-1 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer flex items-center justify-center gap-2',
           generatorType === 'barcode'
-            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+            ? isDark
+              ? 'bg-gray-600 text-white shadow-sm'
+              : 'bg-white text-gray-800 shadow-sm'
             : isDark
-            ? 'text-gray-400 hover:text-white'
+            ? 'text-gray-400 hover:text-gray-200'
             : 'text-gray-500 hover:text-gray-700',
         ]"
       >
-        <Icon name="fa-barcode" />{{ t.barcode }}
+        <Icon name="fa-barcode" class="text-xs" />{{ t.barcode }}
       </button>
     </div>
 

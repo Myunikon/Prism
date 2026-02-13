@@ -123,16 +123,16 @@ const tacticalCategories = {
     </div>
 
     <!-- Payloads -->
-    <div class="grid grid-cols-2 gap-2">
+    <div class="grid grid-cols-2 gap-3">
       <button
         v-for="p in tacticalCategories[activeForgeCategory].payloads"
         :key="p.label"
         @click="$emit('apply', p.val)"
         :class="[
-          'text-left px-2 py-2 rounded border text-[10px] transition-all truncate hover:shadow-md',
+          'text-left px-3 py-2.5 rounded-xl border text-xs transition-all truncate hover:shadow-sm',
           isDark
-            ? 'bg-gray-800 border-gray-700 text-gray-300 hover:border-red-500'
-            : 'bg-white border-gray-200 text-gray-600 hover:border-red-400',
+            ? 'bg-gray-800 border-gray-700 text-gray-300 hover:border-red-500/50 hover:bg-gray-700'
+            : 'bg-white border-gray-200 text-gray-600 hover:border-red-400/50 hover:bg-gray-50',
           currentMode === 'barcode' &&
           !tacticalCategories[activeForgeCategory].compatible.includes(
             'code128'
@@ -142,8 +142,8 @@ const tacticalCategories = {
             : '',
         ]"
       >
-        <div class="font-bold">{{ p.label }}</div>
-        <div class="opacity-50 text-[9px] truncate">{{ p.val }}</div>
+        <div class="font-semibold mb-0.5">{{ p.label }}</div>
+        <div class="opacity-60 text-[10px] font-mono truncate">{{ p.val }}</div>
       </button>
     </div>
 
